@@ -3,7 +3,7 @@ from dash.html import Div
 import pandas as pd
 from custom_dash import CustomDash
 
-from main_service import start
+from main_service import perform_clusterization
 
 # external JavaScript files
 external_scripts = [
@@ -40,7 +40,7 @@ app.index_string = '''
 '''
 
 
-clustered_data = start()
+clustered_data = perform_clusterization()
 # clustered_data.insert(loc=0, column="Date", value=clustered_data.index)
 grouped_cluster = clustered_data.groupby("Cluster").count()
 grouped_cluster.insert(loc=0, column="Cluster", value=grouped_cluster.index)

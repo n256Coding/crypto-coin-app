@@ -5,7 +5,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, Normalizer
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 
-def start():
+def perform_clusterization():
     data = load_data()
     data = transpose(data)
     data = preprocess(data)
@@ -14,6 +14,13 @@ def start():
 
     return data
 
+def get_coin_data(coins: list = None):
+    data = load_data()
+
+    if coins:
+        return data[coins]
+    else:
+        return data
 
 def preprocess(data: DataFrame):
     scaler = MinMaxScaler((0, 1))

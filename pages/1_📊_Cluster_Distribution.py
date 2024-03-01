@@ -3,7 +3,7 @@ import pandas as pd
 import altair as alt
 from urllib.error import URLError
 
-from main_service import start
+from main_service import perform_clusterization
 
 st.set_page_config(page_title="Cluster Distribution", page_icon="📊")
 
@@ -17,7 +17,7 @@ st.write(
 
 @st.cache_data
 def get_dataset():
-    clustered_data = start()
+    clustered_data = perform_clusterization()
     grouped_cluster = clustered_data.groupby("Cluster")["Cluster"].count()
     # grouped_cluster.insert(loc=0, column="Cluster", value=grouped_cluster.index)
     return clustered_data, grouped_cluster
