@@ -15,7 +15,7 @@ st.write(
 )
 
 
-@st.cache_data
+# @st.cache_data
 def get_dataset():
     clustered_data = perform_clusterization()
     grouped_cluster = clustered_data.groupby("Cluster")["Cluster"].count()

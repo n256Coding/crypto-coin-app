@@ -1,4 +1,4 @@
-from constants import COIN_COLUMN_NAME
+from constants import CLUSTER_COLUMN_NAME, COIN_COLUMN_NAME
 from data_loader import load_data
 from pandas import DataFrame
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, Normalizer
@@ -15,6 +15,9 @@ def perform_clusterization():
     return data
 
 def get_coin_data(coins: list = None):
+    """Returns the coin dataset
+    coins (list): filters the dataset with given coins. If None, nothing is filtered
+    """
     data = load_data()
 
     if coins:
@@ -28,8 +31,8 @@ def preprocess(data: DataFrame):
     normalizer = Normalizer(norm='max')
     data_columns = [item for item in data.columns.tolist() if COIN_COLUMN_NAME not in item]
     # data[data_columns] = scaler.fit_transform(data[data_columns])
-    # data[data_columns] = standadizer.fit_transform(data[data_columns])
     data[data_columns] = normalizer.fit_transform(data[data_columns])
+    # data[data_columns] = standadizer.fit_transform(data[data_columns])
 
     return data
 
@@ -61,6 +64,6 @@ def clusterize(data: DataFrame):
     kmeans.fit_transform(data[data_columns])
     clusteres = kmeans.predict(data[data_columns])
 
-    data.insert(loc=0, column="Cluster", value=clusteres)
+    data.insert(loc=0, column=CLUSTER_COLUMN_NAME, value=clusteres)
 
     return data

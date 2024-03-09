@@ -1,0 +1,5 @@
+Selected Coins
+1. XLM-USD
+2. BTC-USD
+3. ICP-USD
+4. USDT-USD
