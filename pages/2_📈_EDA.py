@@ -6,7 +6,8 @@ import plotly.graph_objects as go
 from statsmodels.tsa.seasonal import seasonal_decompose
 import matplotlib.pyplot as plt
 from matplotlib.dates import WeekdayLocator, MonthLocator
-from constants import CLUSTER_COLUMN_NAME, SELECTED_COINS
+from constants import CLUSTER_COLUMN_NAME, INTERESTED_DATA_FIELD, SELECTED_COINS
+from pandas.plotting import lag_plot
 
 from main_service import get_coin_data, perform_clusterization
 
@@ -30,6 +31,21 @@ coins = st.multiselect(
 st.write("## Explore")
 # chart = st.line_chart(last_rows)
 st.line_chart(data=coin_data_df[coins])
+
+st.write("## Correlation with Lags")
+col1, col2 = st.columns(2)
+
+with col1:
+    selected_coin_for_lag_plot = st.selectbox('Select the coin which you want to find the lag plot', SELECTED_COINS)
+
+with col2:
+    lags = st.slider('How many lags?', 1, 120, 2)
+
+fig, ax = plt.subplots(figsize=(8, 8))
+# Draw a lag plot
+lag_plot(coin_data_df[selected_coin_for_lag_plot], ax=ax, lag=lags)
+ax.set_title(f'Lags of coin: {selected_coin_for_lag_plot}')
+st.pyplot(fig)
 
 # https://plotly.com/python/box-plots/
 # df = px.data.tips()
