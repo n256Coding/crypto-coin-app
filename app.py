@@ -3,7 +3,7 @@ from dash.html import Div
 import pandas as pd
 from custom_dash import CustomDash
 
-from main_service import perform_clusterization
+from services.main_service import perform_clusterization
 
 # external JavaScript files
 external_scripts = [

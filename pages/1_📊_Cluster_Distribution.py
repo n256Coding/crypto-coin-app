@@ -3,15 +3,14 @@ import pandas as pd
 import altair as alt
 from urllib.error import URLError
 
-from main_service import perform_clusterization
+from services.main_service import perform_clusterization
 
 st.set_page_config(page_title="Cluster Distribution", page_icon="📊")
 
 st.markdown("# Cluster Distribution")
 # st.sidebar.header("Cluster Distribution")
 st.write(
-    """This demo shows how to use `st.write` to visualize Pandas DataFrames.
-(Data courtesy of the [UN Data Explorer](http://data.un.org/Explorer.aspx).)"""
+    """This section shows the final dataset after applying Normalization, PCA and clustering."""
 )
 
 

@@ -9,7 +9,7 @@ from matplotlib.dates import WeekdayLocator, MonthLocator
 from constants import CLUSTER_COLUMN_NAME, INTERESTED_DATA_FIELD, SELECTED_COINS
 from pandas.plotting import lag_plot
 
-from main_service import get_coin_data, perform_clusterization
+from services.main_service import get_coin_data, perform_clusterization
 
 st.set_page_config(page_title="EDA", page_icon="📈")
 
@@ -44,7 +44,7 @@ with col2:
 fig, ax = plt.subplots(figsize=(8, 8))
 # Draw a lag plot
 lag_plot(coin_data_df[selected_coin_for_lag_plot], ax=ax, lag=lags)
-ax.set_title(f'Lags of coin: {selected_coin_for_lag_plot}')
+ax.set_title(f'Correlation of lags of coin: {selected_coin_for_lag_plot}')
 st.pyplot(fig)
 
 # https://plotly.com/python/box-plots/
@@ -73,7 +73,7 @@ result = seasonal_decompose(coin_data_df[[selected_coin_for_seasonality]], model
 fig, axs = plt.subplots(4, 1, figsize=(12, 8), sharex=True)
 
 # Original time series
-axs[0].plot(coin_data_df[["BTC-USD"]], label='Original')
+axs[0].plot(coin_data_df[[selected_coin_for_seasonality]], label='Original')
 axs[0].legend()
 
 # Trend component

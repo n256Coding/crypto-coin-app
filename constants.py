@@ -5,6 +5,14 @@ SELECTED_COINS = ["XLM-USD", "BTC-USD", "ICP-USD", "USDT-USD"]
 
 DATASET_CACHE_NAME = "currency-dataset.csv"
 
+TEMP_DIR_NAME = "temp"
+
 # Dataframe column names
 COIN_COLUMN_NAME = "Coin"
 CLUSTER_COLUMN_NAME = "Cluster"
+
+# Temp Model Names
+ARIMA_CACHE = "arima_cache.model"
+PROPHET_CACHE = "prophet_cache.model"
+
+EVALUATIONS = {}

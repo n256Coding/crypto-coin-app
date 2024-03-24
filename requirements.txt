@@ -2,3 +2,6 @@ yfinance
 pandas
 # dash
 streamlit
+pmdarima
+statsmodels
+prophet

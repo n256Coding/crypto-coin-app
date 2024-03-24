@@ -32,7 +32,7 @@ def preprocess(data: DataFrame):
     data_columns = [item for item in data.columns.tolist() if COIN_COLUMN_NAME not in item]
     # data[data_columns] = scaler.fit_transform(data[data_columns])
     data[data_columns] = normalizer.fit_transform(data[data_columns])
-    # data[data_columns] = standadizer.fit_transform(data[data_columns])
+    data[data_columns] = standadizer.fit_transform(data[data_columns])
 
     return data
 
