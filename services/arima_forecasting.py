@@ -1,16 +1,20 @@
 # Import the library
 from pmdarima import auto_arima
+from pmdarima import ARIMA
+import pmdarima as pm
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 import pandas as pd
+from pandas import DataFrame
 import pickle
 import streamlit as st
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from statsmodels.tools.eval_measures import rmse
- 
+from datetime import datetime, timedelta
+
 # Ignore harmless warnings
 import warnings
 
-from constants import ARIMA_CACHE
+from constants import ARIMA_CACHE, ARIMA_EVAL_CACHE, MODEL_ARIMA, ONE_MONTH, ONE_WEEK, THREE_MONTHS
 from services.file_handler import get_temp_file_path, is_file_exits
 warnings.filterwarnings("ignore")
 
@@ -26,7 +30,7 @@ def find_best_params(dataset, selected_coin):
         [1]: seasonal arima parameters
     """
 
-    cached_model_name = get_temp_file_path(selected_coin, ARIMA_CACHE)
+    cached_model_name = get_temp_file_path(selected_coin, ARIMA_EVAL_CACHE)
 
     if is_file_exits(cached_model_name):
         return None, None
@@ -49,16 +53,19 @@ def find_best_params(dataset, selected_coin):
 
     return stepwise_fit.order, stepwise_fit.seasonal_order
 
-def train_model(dataset, model_params, selected_coin):
+def train_full_model(dataset: DataFrame, selected_coin: str, forecast_period: str):
+
+    temp_dataset_df = dataset[selected_coin]
 
     # Split data into train / test sets
-    train = dataset.iloc[:len(dataset)-12]
-    test = dataset.iloc[len(dataset)-12:] # set one year(12 months) for testing
+    # train_size = int(0.8 * len(temp_dataset_df))
+    # train = temp_dataset_df.iloc[:train_size]
+    # test = temp_dataset_df.iloc[train_size:]
+
     cached_model_name = get_temp_file_path(selected_coin, ARIMA_CACHE)
     
     if not is_file_exits(cached_model_name):
-        model = SARIMAX(train[selected_coin], order = model_params[0], seasonal_order = model_params[1])
-        result = model.fit()
+        result = pm.auto_arima(temp_dataset_df, error_action='ignore', suppress_warnings=True, D=1, seasonal=True, m=12)
 
         with open(cached_model_name, "wb") as f:
             pickle.dump(result, f)
@@ -67,18 +74,100 @@ def train_model(dataset, model_params, selected_coin):
         with open(cached_model_name, "rb") as f:
             result = pickle.load(f)
         
-        st.toast('Model loaded from cache', icon='🎉')
+        st.toast(f'{MODEL_ARIMA} model loaded from cache', icon='🎉')
+
+    if forecast_period == ONE_WEEK:
+        period = 7
+
+    elif forecast_period == ONE_MONTH:
+        period = 30
+
+    elif forecast_period == THREE_MONTHS:
+        period = 90
+    
+    predictions, conf_int = result.predict(n_periods=period, return_conf_int=True)
+
+    forecast_dataframe = pd.DataFrame({
+        "Prediction": predictions
+    }, index=pd.to_datetime(predictions.index))
+
+    return forecast_dataframe
+
+def train_model(dataset: DataFrame, model_params: tuple, selected_coin: str):
+
+    temp_dataset_df = dataset[selected_coin]
+
+    # Split data into train / test sets
+    train_size = int(0.8 * len(temp_dataset_df))
+    train = temp_dataset_df.iloc[:train_size]
+    test = temp_dataset_df.iloc[train_size:]
+
+    cached_model_name = get_temp_file_path(selected_coin, ARIMA_EVAL_CACHE)
+    
+    if not is_file_exits(cached_model_name):
+        # model = SARIMAX(train, order = model_params[0], seasonal_order = model_params[1], freq='D')
+        # model = ARIMA(order = model_params[0], seasonal_order = model_params[1])
+        result = pm.auto_arima(train, error_action='ignore', suppress_warnings=True, D=1, seasonal=True, m=12)
+        # result = model.fit(train)
+
+        with open(cached_model_name, "wb") as f:
+            pickle.dump(result, f)
+
+    else:
+        with open(cached_model_name, "rb") as f:
+            result = pickle.load(f)
+        
+        st.toast(f'{MODEL_ARIMA} model loaded from cache', icon='🎉')
 
     start = len(train)
     end = len(train) + len(test) - 1
     
-    # Predictions for one-year against the test set
-    predictions = result.predict(start, end, typ = 'levels').rename("Prediction")
+    # predictions = result.predict(start, end, typ = 'levels').rename("Prediction")
+    predictions, conf_int = result.predict(n_periods=len(test), return_conf_int=True)
     test.index = pd.to_datetime(test.index)
 
-    return predictions, test[selected_coin]
+    print("------------------------")
+    print(predictions)
 
-def get_evaluations(prediction_data, test_data):
+    forecast_dataframe = pd.DataFrame({
+        "Prediction": predictions
+    }, index=pd.to_datetime(predictions.index))
+    test_dataframe = pd.DataFrame({
+        "Actual": test,
+    }, index=test.index)
+
+    return forecast_dataframe, test_dataframe
+
+def predict(dataset: DataFrame, model_params: tuple, selected_coin: str, num_future_days: int):
+    
+    cached_model_name = get_temp_file_path(selected_coin, ARIMA_CACHE)
+    start_date = datetime.strptime(dataset.index[-1], "%Y-%m-%d")
+    end_date = start_date + timedelta(days=num_future_days)
+    future_dates = pd.date_range(start=start_date.strftime('%Y-%m-%d'), end=end_date.strftime('%Y-%m-%d'))
+
+    if not is_file_exits(cached_model_name):
+        model = SARIMAX(dataset[selected_coin], order=model_params[0], seasonal_order=model_params[1])
+        model = model.fit()
+
+        with open(cached_model_name, "wb") as f:
+            pickle.dump(model, f)
+
+    else:
+        with open(cached_model_name, "rb") as f:
+            model = pickle.load(f)
+
+    start = len(dataset)
+    end = len(dataset) + num_future_days
+
+    prediction = model.predict(start, end, typ='levels').rename("Prediction")
+    prediction.index = future_dates
+
+    actual = dataset[selected_coin]
+    actual.index = pd.to_datetime(actual.index)
+
+    return prediction, actual
+
+def get_evaluations(prediction_data: DataFrame, test_data: DataFrame):
     # Calculate root mean squared error
     rmse_score = rmse(test_data, prediction_data)
     
@@ -87,4 +176,4 @@ def get_evaluations(prediction_data, test_data):
 
     mae_score = mean_absolute_error(test_data, prediction_data)
 
-    return rmse_score, mse_score, mae_score
+    return rmse_score[0], mse_score, mae_score

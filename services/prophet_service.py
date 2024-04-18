@@ -2,13 +2,57 @@ from prophet import Prophet
 import pickle
 import streamlit as st
 import pandas as pd
+from pandas import DataFrame
 import numpy as np
 
-from constants import PROPHET_CACHE
+from constants import MODEL_PROPHET, ONE_MONTH, ONE_WEEK, PROPHET_CACHE, PROPHET_EVAL_CACHE, THREE_MONTHS
 from services.file_handler import get_temp_file_path, is_file_exits
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
-def train_model(dataset, selected_coin):
+def train_full_model(dataset: DataFrame, selected_coin: str, forecast_period: str):
+
+    temp_dataset_df = dataset[selected_coin]
+    temp_dataset_df = temp_dataset_df.reset_index()
+    temp_dataset_df.columns = ["ds", "y"]
+
+    cached_model_name = get_temp_file_path(selected_coin, PROPHET_CACHE)
+
+    if not is_file_exits(cached_model_name):
+        # Initialize and fit the model
+        model = Prophet(yearly_seasonality=True, weekly_seasonality=True)
+        model.fit(temp_dataset_df)
+
+        with open(cached_model_name, "wb") as f:
+            pickle.dump(model, f)
+
+    else:
+        with open(cached_model_name, "rb") as f:
+            model = pickle.load(f)
+
+        st.toast(f'{MODEL_PROPHET} model loaded from cache', icon='🎉')
+
+
+    if forecast_period == ONE_WEEK:
+        period = 7
+
+    elif forecast_period == ONE_MONTH:
+        period = 30
+
+    elif forecast_period == THREE_MONTHS:
+        period = 90
+
+    df_future = model.make_future_dataframe(periods=period, include_history=False)
+
+    # Make predictions for the test set
+    forecast = model.predict(df_future)
+
+    forecast_df = pd.DataFrame({
+        "Prediction": forecast["yhat"].values, 
+    }, index=pd.to_datetime(forecast["ds"].values))
+
+    return forecast_df
+
+def train_model(dataset: DataFrame, selected_coin: str):
 
     temp_dataset_df = dataset[selected_coin]
     temp_dataset_df = temp_dataset_df.reset_index()
@@ -18,7 +62,8 @@ def train_model(dataset, selected_coin):
     train_df = temp_dataset_df.iloc[:train_size]
     test_df = temp_dataset_df.iloc[train_size:]
 
-    cached_model_name = get_temp_file_path(selected_coin, PROPHET_CACHE)
+    cached_model_name = get_temp_file_path(selected_coin, PROPHET_EVAL_CACHE)
+
     if not is_file_exits(cached_model_name):
         # Initialize and fit the model
         model = Prophet()
@@ -31,7 +76,7 @@ def train_model(dataset, selected_coin):
         with open(cached_model_name, "rb") as f:
             model = pickle.load(f)
 
-        st.toast('Model loaded from cache', icon='🎉')
+        st.toast(f'{MODEL_PROPHET} model loaded from cache', icon='🎉')
 
     # Make predictions for the test set
     forecast = model.predict(test_df.drop(columns='y'))
@@ -43,7 +88,7 @@ def train_model(dataset, selected_coin):
         "Actual": test_df["y"].values, 
     }, index=pd.to_datetime(test_df["ds"].values))
 
-    return forecast_series, test_series
+    return forecast_series, test_series, forecast
 
 def get_evaluations(prediction_data, test_data):
     # Calculate root mean squared error

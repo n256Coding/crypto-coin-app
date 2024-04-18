@@ -1,12 +1,16 @@
-from constants import CLUSTER_COLUMN_NAME, COIN_COLUMN_NAME
-from data_loader import load_data
+from constants import CLUSTER_COLUMN_NAME, COIN_COLUMN_NAME, LSTM_CACHE, SELECTED_COINS
+from data_loader import delete_dataset_cache, load_clustering_data, load_data
 from pandas import DataFrame
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, Normalizer
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 
+import streamlit as st
+
+from services.file_handler import delete_cache_files
+
 def perform_clusterization():
-    data = load_data()
+    data = load_clustering_data()
     data = transpose(data)
     data = preprocess(data)
     data = dimentionality_reduction(data, None)
@@ -67,3 +71,17 @@ def clusterize(data: DataFrame):
     data.insert(loc=0, column=CLUSTER_COLUMN_NAME, value=clusteres)
 
     return data
+
+def reload_dataset_and_train_model(selected_coin_for_forecast, model_type):
+    print("Calling data reload .............")
+    with st.spinner("Clearing the old dataset"):
+        # delete_dataset_cache() TODO: temporarily commented 
+        pass
+            
+    with st.spinner("Deleting the model cache"):
+        delete_cache_files(selected_coin_for_forecast, model_type)
+
+    with st.spinner("Downloading the latest data from Yahoo Finance ..."):
+        coin_data_df = get_coin_data(SELECTED_COINS)
+        
+    return coin_data_df
