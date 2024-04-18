@@ -1,10 +1,11 @@
 import pandas as pd
-from constants import CLUSTER_COLUMN_NAME, COIN_COLUMN_NAME, MODEL_UPDATED_TIME, SELECTED_COINS
+from constants import BUY, CLUSTER_COLUMN_NAME, COIN_COLUMN_NAME, MODEL_UPDATED_TIME, SAME, SELECTED_COINS, SELL
 from data_loader import load_clustering_data, load_data
 from pandas import DataFrame
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, Normalizer
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
+from collections import Counter
 
 import streamlit as st
 
@@ -87,8 +88,8 @@ def reload_dataset_and_train_model(selected_coin_for_forecast, model_type):
         
     return coin_data_df
 
-def prepare_forecast_dataset(coin_data_df, selected_coin_for_forecast, updated_time_placeholder, 
-                          forecasted_dataset, model_cache_type):
+def prepare_forecast_dataset(coin_data_df: DataFrame, selected_coin_for_forecast: str, updated_time_placeholder, 
+                             forecasted_dataset: DataFrame, model_cache_type: str) -> DataFrame:
     
     model_date = get_model_time(selected_coin_for_forecast, model_cache_type)
     updated_time_placeholder.text(MODEL_UPDATED_TIME.format(model_date))
@@ -105,3 +106,24 @@ def prepare_forecast_dataset(coin_data_df, selected_coin_for_forecast, updated_t
     plotted_df.index = pd.to_datetime(plotted_df.index)
 
     return plotted_df
+
+def get_trade_signal(coin_data_df: DataFrame, selected_coin_for_forecast: str, forecasted_dataset: DataFrame) -> str:
+    today_price = coin_data_df[selected_coin_for_forecast].iloc[-1]
+    forecasted_price = forecasted_dataset.iloc[-1].values[0]
+
+    if today_price > forecasted_price:
+        return SELL
+    
+    elif today_price < forecasted_price:
+        return BUY
+    
+    else:
+        return SAME
+
+def update_trade_signal_placeholder(placeholder, trade_signal: str, model_name: str):
+    with placeholder.container():
+        st.markdown(f"###### {model_name}: :red[{trade_signal}]")
+
+def get_most_voted_trade_signal(trade_signal_list: list) -> str:
+    trade_signal_count = Counter(trade_signal_list)
+    return trade_signal_count.most_common(1)[0][0]
