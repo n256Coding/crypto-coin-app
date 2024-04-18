@@ -1,5 +1,6 @@
-from constants import CLUSTER_COLUMN_NAME, COIN_COLUMN_NAME, LSTM_CACHE, SELECTED_COINS
-from data_loader import delete_dataset_cache, load_clustering_data, load_data
+import pandas as pd
+from constants import CLUSTER_COLUMN_NAME, COIN_COLUMN_NAME, MODEL_UPDATED_TIME, SELECTED_COINS
+from data_loader import load_clustering_data, load_data
 from pandas import DataFrame
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, Normalizer
 from sklearn.decomposition import PCA
@@ -7,7 +8,7 @@ from sklearn.cluster import KMeans
 
 import streamlit as st
 
-from services.file_handler import delete_cache_files
+from services.file_handler import delete_cache_files, get_model_time
 
 def perform_clusterization():
     data = load_clustering_data()
@@ -85,3 +86,22 @@ def reload_dataset_and_train_model(selected_coin_for_forecast, model_type):
         coin_data_df = get_coin_data(SELECTED_COINS)
         
     return coin_data_df
+
+def prepare_forecast_dataset(coin_data_df, selected_coin_for_forecast, updated_time_placeholder, 
+                          forecasted_dataset, model_cache_type):
+    
+    model_date = get_model_time(selected_coin_for_forecast, model_cache_type)
+    updated_time_placeholder.text(MODEL_UPDATED_TIME.format(model_date))
+
+    temp_df = pd.DataFrame({
+        "Current": coin_data_df[selected_coin_for_forecast],
+    }, index=coin_data_df.index)
+
+    temp_df1 = pd.DataFrame({
+        "Forecasted": forecasted_dataset["Prediction"],
+    }, index=forecasted_dataset.index)
+
+    plotted_df = pd.concat([temp_df, temp_df1])
+    plotted_df.index = pd.to_datetime(plotted_df.index)
+
+    return plotted_df
