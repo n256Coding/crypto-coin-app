@@ -27,7 +27,7 @@ def train_full_model(dataset, selected_coin, forecast_period: str) -> tuple[pd.D
             m = pickle.load(f)
             m.restore_trainer()
 
-        st.toast(f"{MODEL_NEURALPROPHET} model loaded from cache", icon='🎉')
+        st.toast(f"{MODEL_NEURALPROPHET} model loaded from cache", icon='ℹ️')
     
     if forecast_period == ONE_WEEK:
         period = 7
@@ -74,7 +74,7 @@ def train_model(dataset, selected_coin) -> tuple[pd.DataFrame, pd.DataFrame]:
             m = pickle.load(f)
             m.restore_trainer()
 
-        st.toast(f"{MODEL_NEURALPROPHET} model loaded from cache", icon='🎉')
+        st.toast(f"{MODEL_NEURALPROPHET} model loaded from cache", icon='ℹ️')
     
     forecast = m.predict(test_df)
 

@@ -1,7 +1,10 @@
-from constants import (ARIMA_CACHE, LSTM_CACHE, MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, 
-                       MODEL_RETRAIN_WILL_TAKE_TIME, MODEL_TRAINING_IN_PROGRESS, NEURALPROPHET_CACHE, 
-                       ONE_MONTH, ONE_WEEK, PROPHET_CACHE, SELECTED_COINS, THREE_MONTHS, UPDATE_MODEL)
-from services.main_service import get_coin_data, get_most_voted_trade_signal, get_trade_signal, prepare_forecast_dataset, reload_dataset_and_train_model, update_trade_signal_placeholder
+from constants import (ARIMA_CACHE, COIN_SUGGESTION_THRESHOULD, LSTM_CACHE, MAX_SUGGESTED_COINS, MODEL_ARIMA, 
+                       MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, MODEL_RETRAIN_WILL_TAKE_TIME, 
+                       MODEL_TRAINING_IN_PROGRESS, NEURALPROPHET_CACHE, ONE_MONTH, ONE_WEEK, PROPHET_CACHE, 
+                       SELECTED_COINS, THREE_MONTHS, UPDATE_MODEL)
+from services.main_service import (get_coin_data, get_most_voted_trade_signal, get_trade_signal, 
+                                   prepare_forecast_dataset, reload_dataset_and_train_model, 
+                                   update_trade_signal_placeholder)
 from services import lstm_service, neuralprophet_service, prophet_service, arima_forecasting
 import streamlit as st
 
@@ -41,7 +44,7 @@ with col_trade_signal_4:
     txt_lstm_trade_signal = st.empty()
     txt_lstm_trade_signal.markdown(f"###### {MODEL_LSTM}: :blue[Loading ...]")
 
-col_avg_trade_signal_left, col_avg_trade_signal_right = st.columns(2)
+col_avg_trade_signal_left, col_avg_trade_signal_right = st.columns([0.8, 0.2])
 with col_avg_trade_signal_left:
     txt_avg_trade_signal = st.empty()
     txt_avg_trade_signal.markdown("Determing the most voted decision ...")
@@ -50,6 +53,10 @@ with col_avg_trade_signal_right:
     txt_avg_trade_signal_indicator = st.empty()
     txt_avg_trade_signal_indicator.markdown("# :hourglass_flowing_sand:")
 
+
+# Correlated Coins
+txt_correlated_coins = st.empty()
+txt_correlated_coins.markdown("Suggested coins are loading ...")
 
 # Tabbed Panel
 st.subheader('Detailed View', divider='rainbow')
@@ -129,5 +136,21 @@ with tab_lstm:
 
     st.line_chart(data=plotted_lstm_df)
 
-txt_avg_trade_signal.markdown(f"Based on most votes, it is recommended to **{get_most_voted_trade_signal(trade_signals)}** your {selected_coin_for_forecast} based on future {forecast_period} forecast.")
-txt_avg_trade_signal_indicator.markdown(f"# **:red[{get_most_voted_trade_signal(trade_signals)}]**")
+most_voted_trade_signal = get_most_voted_trade_signal(trade_signals)
+
+txt_avg_trade_signal.markdown(f"Based on most votes, it is recommended to **{most_voted_trade_signal}** your {selected_coin_for_forecast} based on future {forecast_period} forecast.")
+txt_avg_trade_signal_indicator.markdown(f"# **:red[{most_voted_trade_signal}]**")
+
+
+full_coin_data_correlation = get_coin_data().corr()
+correlated_coins = (full_coin_data_correlation[selected_coin_for_forecast]
+                        .where(lambda x: x > COIN_SUGGESTION_THRESHOULD)
+                        .dropna()
+                        .sort_values(ascending=False)
+                        .iloc[1:MAX_SUGGESTED_COINS]
+                        .index
+                        .to_list())
+
+with txt_correlated_coins.container():
+    st.markdown(f"Based on our records, we can recommend you to **{most_voted_trade_signal}** following coins as well")
+    st.markdown(f"##### {', '.join(correlated_coins)}")

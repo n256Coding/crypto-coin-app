@@ -74,7 +74,7 @@ def train_full_model(dataset: DataFrame, selected_coin: str, forecast_period: st
         with open(cached_model_name, "rb") as f:
             result = pickle.load(f)
         
-        st.toast(f'{MODEL_ARIMA} model loaded from cache', icon='🎉')
+        st.toast(f'{MODEL_ARIMA} model loaded from cache', icon='ℹ️')
 
     if forecast_period == ONE_WEEK:
         period = 7
@@ -117,7 +117,7 @@ def train_model(dataset: DataFrame, model_params: tuple, selected_coin: str):
         with open(cached_model_name, "rb") as f:
             result = pickle.load(f)
         
-        st.toast(f'{MODEL_ARIMA} model loaded from cache', icon='🎉')
+        st.toast(f'{MODEL_ARIMA} model loaded from cache', icon='ℹ️')
 
     start = len(train)
     end = len(train) + len(test) - 1

@@ -11,6 +11,8 @@ CLUSTER_DATASET_CACHE_NAME = "cluster-currency-dataset.csv"
 
 TEMP_DIR_NAME = "temp"
 
+COIN_SUGGESTION_THRESHOULD = 0.7
+MAX_SUGGESTED_COINS = 8
 
 # Dataframe column names
 COIN_COLUMN_NAME = "Coin"
@@ -47,7 +49,7 @@ THREE_MONTHS = '3 Months'
 # Trade Signals
 BUY = "Buy"
 SELL = "Sell"
-SAME = "Same"
+SAME = "Buy or Sell"
 
 
 # MISC Captions

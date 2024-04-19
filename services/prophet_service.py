@@ -29,7 +29,7 @@ def train_full_model(dataset: DataFrame, selected_coin: str, forecast_period: st
         with open(cached_model_name, "rb") as f:
             model = pickle.load(f)
 
-        st.toast(f'{MODEL_PROPHET} model loaded from cache', icon='🎉')
+        st.toast(f'{MODEL_PROPHET} model loaded from cache', icon='ℹ️')
 
 
     if forecast_period == ONE_WEEK:
@@ -76,7 +76,7 @@ def train_model(dataset: DataFrame, selected_coin: str):
         with open(cached_model_name, "rb") as f:
             model = pickle.load(f)
 
-        st.toast(f'{MODEL_PROPHET} model loaded from cache', icon='🎉')
+        st.toast(f'{MODEL_PROPHET} model loaded from cache', icon='ℹ️')
 
     # Make predictions for the test set
     forecast = model.predict(test_df.drop(columns='y'))

@@ -29,7 +29,6 @@ coins = st.multiselect(
 )
 
 st.write("## Explore")
-# chart = st.line_chart(last_rows)
 st.line_chart(data=coin_data_df[coins])
 
 st.write("## Correlation with Lags")
@@ -66,8 +65,9 @@ progress_bar.empty()
 st.write("## Seasonal Decomposition")
 
 selected_coin_for_seasonality = st.selectbox('Select the coin which you want to find the seasonal decomposition', SELECTED_COINS)
-# Perform seasonal decomposition
-result = seasonal_decompose(coin_data_df[[selected_coin_for_seasonality]], model='additive', period=30)  # Adjust the period according to your dataset's seasonality
+
+with st.spinner("Computing in progress ..."):
+    result = seasonal_decompose(coin_data_df[[selected_coin_for_seasonality]], model='additive', period=30)  # Adjust the period according to your dataset's seasonality
 
 # Plot the original, trend, seasonal, and residual components using plt.subplots()
 fig, axs = plt.subplots(4, 1, figsize=(12, 8), sharex=True)

@@ -53,7 +53,7 @@ def train_model(dataset: pd.DataFrame, selected_coin: str):
         with open(cached_scaler_name, "rb") as f:
             scaler = pickle.load(f)
 
-        st.toast(f'{MODEL_LSTM} model loaded from cache', icon='🎉')
+        st.toast(f'{MODEL_LSTM} model loaded from cache', icon='ℹ️')
 
     
     test_y_copies = np.repeat(test_y.reshape(-1, 1), test_x.shape[-1], axis=1)
@@ -103,7 +103,7 @@ def train_full_model(dataset: pd.DataFrame, selected_coin: str, forecast_period:
         with open(cached_scaler_name, "rb") as f:
             scaler = pickle.load(f)
 
-        st.toast(f'{MODEL_LSTM} model loaded from cache', icon='🎉')
+        st.toast(f'{MODEL_LSTM} model loaded from cache', icon='ℹ️')
 
     predicted_sequence = []
     start_sequence = scaled_dataset[-sequence_length:]
