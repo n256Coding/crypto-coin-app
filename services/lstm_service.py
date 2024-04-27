@@ -12,7 +12,7 @@ from keras.saving import load_model
 from sklearn.preprocessing import MinMaxScaler
 
 from config import LSTM_CACHE, LSTM_EVAL_CACHE, MODEL_LSTM, ONE_MONTH, ONE_WEEK, THREE_MONTHS
-from services.file_handler import get_temp_file_path, is_file_exits
+from util.file_handler import get_temp_file_path, is_file_exits
 
 sequence_length = 10
 

@@ -11,9 +11,9 @@ from pandas.plotting import lag_plot
 
 from services.main_service import get_coin_data, perform_clusterization
 
-st.set_page_config(page_title="EDA", page_icon="📈")
+st.set_page_config(page_title="EDA", page_icon="📈", layout="wide")
 
-st.markdown("# EDA")
+st.markdown("# Explanatory Data Analysis (EDA)")
 st.sidebar.header("EDA")
 st.write(
     """This section performs various explanatory data analysis (EDA) on the dataset."""
@@ -28,73 +28,63 @@ coins = st.multiselect(
     "Choose coins", SELECTED_COINS, SELECTED_COINS
 )
 
-st.write("## Explore")
+st.write("## Trend Analysis")
 st.line_chart(data=coin_data_df[coins])
 
-st.write("## Correlation with Lags")
-col1, col2 = st.columns(2)
 
-with col1:
-    selected_coin_for_lag_plot = st.selectbox('Select the coin which you want to find the lag plot', SELECTED_COINS)
+row1_col1, row1_col2 = st.columns(2)
 
-with col2:
-    lags = st.slider('How many lags?', 1, 120, 2)
+with row1_col1:
+    st.write("## Correlation with Lags")
+    col1, col2 = st.columns(2)
 
-fig, ax = plt.subplots(figsize=(8, 8))
-# Draw a lag plot
-lag_plot(coin_data_df[selected_coin_for_lag_plot], ax=ax, lag=lags)
-ax.set_title(f'Correlation of lags of coin: {selected_coin_for_lag_plot}')
-st.pyplot(fig)
+    with col1:
+        selected_coin_for_lag_plot = st.selectbox('Select the coin which you want to find the lag plot', SELECTED_COINS)
 
-# https://plotly.com/python/box-plots/
-# df = px.data.tips()
-# fig = px.box(coin_data_df, y="total_bill")
-# fig.show()
+    with col2:
+        lags = st.slider('How many lags?', 1, 120, 2)
 
-# for i in range(1, 101):
-#     new_rows = last_rows[-1, :] + np.random.randn(5, 1).cumsum(axis=0)
-#     status_text.text("%i%% Complete" % i)
-#     chart.add_rows(new_rows)
-#     progress_bar.progress(i)
-#     last_rows = new_rows
-#     time.sleep(0.05)
-
-progress_bar.empty()
+    fig, ax = plt.subplots(figsize=(8, 8))
+    # Draw a lag plot
+    lag_plot(coin_data_df[selected_coin_for_lag_plot], ax=ax, lag=lags)
+    ax.set_title(f'Correlation of lags of coin: {selected_coin_for_lag_plot}')
+    st.pyplot(fig)
 
 
-st.write("## Seasonal Decomposition")
+with row1_col2:
+    st.write("## Seasonal Decomposition")
 
-selected_coin_for_seasonality = st.selectbox('Select the coin which you want to find the seasonal decomposition', SELECTED_COINS)
+    selected_coin_for_seasonality = st.selectbox('Select the coin which you want to find the seasonal decomposition', SELECTED_COINS)
 
-with st.spinner("Computing in progress ..."):
-    result = seasonal_decompose(coin_data_df[[selected_coin_for_seasonality]], model='additive', period=30)  # Adjust the period according to your dataset's seasonality
+    with st.spinner("Computing in progress ..."):
+        result = seasonal_decompose(coin_data_df[[selected_coin_for_seasonality]], model='additive', period=30)  # Adjust the period according to your dataset's seasonality
 
-# Plot the original, trend, seasonal, and residual components using plt.subplots()
-fig, axs = plt.subplots(4, 1, figsize=(12, 8), sharex=True)
+    # Plot the original, trend, seasonal, and residual components using plt.subplots()
+    fig, axs = plt.subplots(4, 1, figsize=(12, 8), sharex=True)
 
-# Original time series
-axs[0].plot(coin_data_df[[selected_coin_for_seasonality]], label='Original')
-axs[0].legend()
+    # Original time series
+    axs[0].plot(coin_data_df[[selected_coin_for_seasonality]], label='Original')
+    axs[0].legend()
 
-# Trend component
-axs[1].plot(result.trend, label='Trend')
-axs[1].legend()
+    # Trend component
+    axs[1].plot(result.trend, label='Trend')
+    axs[1].legend()
 
-# Seasonal component
-axs[2].plot(result.seasonal, label='Seasonal')
-axs[2].legend()
+    # Seasonal component
+    axs[2].plot(result.seasonal, label='Seasonal')
+    axs[2].legend()
 
-# Residual component
-axs[3].plot(result.resid, label='Residual')
-axs[3].legend()
+    # Residual component
+    axs[3].plot(result.resid, label='Residual')
+    axs[3].legend()
 
-for ax in axs:
-    ax.xaxis.set_major_locator(MonthLocator())
-    ax.tick_params(axis='x', rotation=45)
+    for ax in axs:
+        ax.xaxis.set_major_locator(MonthLocator())
+        ax.tick_params(axis='x', rotation=45)
 
-plt.tight_layout()
+    plt.tight_layout()
 
-st.pyplot(fig)
+    st.pyplot(fig)
 
 x_data = SELECTED_COINS
 y_data = [coin_data_df[coin] for coin in x_data]
@@ -102,7 +92,7 @@ colors = ['rgba(93, 164, 214, 0.5)', 'rgba(255, 144, 14, 0.5)', 'rgba(44, 160, 1
           'rgba(255, 65, 54, 0.5)']
 
 
-st.write("## Investigate")
+st.write("## Univariate Analysis")
 
 tab1, tab2, tab3 = st.tabs(["Box Plots", "Histograms", "Correlation"])
 
@@ -157,22 +147,27 @@ with tab3:
     group3_coins = list(clustered_data[clustered_data[CLUSTER_COLUMN_NAME] == 2].index)
     group4_coins = list(clustered_data[clustered_data[CLUSTER_COLUMN_NAME] == 3].index)
     
-    group1_selected_coins = st.multiselect(
-        "Choose coins from group 1", group1_coins, group1_coins
-    )
-    group2_selected_coins = st.multiselect(
-        "Choose coins from group 2", group2_coins, group2_coins
-    )
-    group3_selected_coins = st.multiselect(
-        "Choose coins from group 3", group3_coins, group3_coins
-    )
-    group4_selected_coins = st.multiselect(
-        "Choose coins from group 4", group4_coins, group4_coins
-    )
 
-    corr_coin_data = get_coin_data(group1_selected_coins + group2_selected_coins + group3_selected_coins + group4_selected_coins)
-    correlation_matrix = corr_coin_data.corr()
+    col_correlation_left, col_correlation_right = st.columns([0.3, 0.7])
 
-    fig = px.imshow(correlation_matrix, text_auto=True, aspect="auto")
-    st.plotly_chart(fig, theme="streamlit")
+    with col_correlation_left:
+        group1_selected_coins = st.multiselect(
+            "Choose coins from group 1", group1_coins, group1_coins
+        )
+        group2_selected_coins = st.multiselect(
+            "Choose coins from group 2", group2_coins, group2_coins
+        )
+        group3_selected_coins = st.multiselect(
+            "Choose coins from group 3", group3_coins, group3_coins
+        )
+        group4_selected_coins = st.multiselect(
+            "Choose coins from group 4", group4_coins, group4_coins
+        )
+
+    with col_correlation_right:
+        corr_coin_data = get_coin_data(group1_selected_coins + group2_selected_coins + group3_selected_coins + group4_selected_coins)
+        correlation_matrix = corr_coin_data.corr()
+
+        fig = px.imshow(correlation_matrix, text_auto=True, height=800, width=800)
+        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 

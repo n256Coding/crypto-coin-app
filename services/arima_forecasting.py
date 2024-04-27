@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 import warnings
 
 from config import ARIMA_CACHE, ARIMA_EVAL_CACHE, MODEL_ARIMA, ONE_MONTH, ONE_WEEK, THREE_MONTHS
-from services.file_handler import get_temp_file_path, is_file_exits
+from util.file_handler import get_temp_file_path, is_file_exits
 warnings.filterwarnings("ignore")
 
 

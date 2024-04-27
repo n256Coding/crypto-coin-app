@@ -7,10 +7,11 @@ from services.main_service import (get_coin_data, get_most_voted_trade_signal, g
                                    update_trade_signal_placeholder)
 from services import lstm_service, neuralprophet_service, prophet_service, arima_forecasting
 import streamlit as st
+import plotly.express as px
 
-st.set_page_config(page_title="Forecast", page_icon="📈")
+st.set_page_config(page_title="Trade Assistant - Forcast", page_icon="📈", layout="wide")
 
-st.markdown("# Forecast")
+st.markdown("# Trade Assistant - Forcast")
 
 coin_data_df = get_coin_data(SELECTED_COINS)
 trade_signals = []
@@ -19,10 +20,10 @@ trade_signals = []
 # Input Panel
 col1, col2 = st.columns(2)
 with col1:
-    selected_coin_for_forecast = st.selectbox('Select the coin which you want to forcast', SELECTED_COINS, key="forecast_coin_select")
+    selected_coin_for_forecast = st.selectbox('Select the coin which you want to get the assitance with', SELECTED_COINS, key="forecast_coin_select")
 
 with col2:
-    forecast_period = st.selectbox('Period', (ONE_WEEK, ONE_MONTH, THREE_MONTHS))
+    forecast_period = st.selectbox('Targetted trading period', (ONE_WEEK, ONE_MONTH, THREE_MONTHS))
 
 
 # Trade Signal Panel
@@ -54,9 +55,17 @@ with col_avg_trade_signal_right:
     txt_avg_trade_signal_indicator.markdown("# :hourglass_flowing_sand:")
 
 
-# Correlated Coins
-txt_correlated_coins = st.empty()
-txt_correlated_coins.markdown("Suggested coins are loading ...")
+# This section shows the seggested coins which are correlated with the selected coin
+col_trade_suggestion_left, col_trade_suggestion_right = st.columns(2)
+with col_trade_suggestion_left:
+    # shows the positive correlated coins
+    txt_positive_correlated_coins = st.empty()
+    txt_positive_correlated_coins.markdown("Please wait, We are preparing suggestions for you ...")
+
+with col_trade_suggestion_right:
+    # shows the negative correlated coins
+    txt_least_correlated_coins = st.empty()
+    txt_least_correlated_coins.markdown("Please wait, We are preparing suggestions for you ...")
 
 # Tabbed Panel
 st.subheader('Detailed View', divider='rainbow')
@@ -77,7 +86,10 @@ with tab_arima:
     update_trade_signal_placeholder(txt_arima_trade_signal, arima_trade_signal, MODEL_ARIMA)
     trade_signals.append(arima_trade_signal)
 
-    st.line_chart(data=plotted_arima_df)
+
+    fig = px.line(plotted_arima_df, labels={'index': 'Timestamp'})
+    st.plotly_chart(fig, use_container_width=True)
+    # st.line_chart(data=plotted_arima_df)
 
 with tab_prophet:
     prophet_updated_time_placeholder = st.empty()
@@ -143,14 +155,17 @@ txt_avg_trade_signal_indicator.markdown(f"# **:red[{most_voted_trade_signal}]**"
 
 
 full_coin_data_correlation = get_coin_data().corr()
-correlated_coins = (full_coin_data_correlation[selected_coin_for_forecast]
+correlated_coins_df = (full_coin_data_correlation[selected_coin_for_forecast]
                         .where(lambda x: x > COIN_SUGGESTION_THRESHOULD)
                         .dropna()
-                        .sort_values(ascending=False)
-                        .iloc[1:MAX_SUGGESTED_COINS]
-                        .index
-                        .to_list())
+                        .sort_values(ascending=False))
+positive_correlated_coins = correlated_coins_df.iloc[1:MAX_SUGGESTED_COINS].index.to_list()
+least_correlated_coins = correlated_coins_df.iloc[-MAX_SUGGESTED_COINS:].index.to_list()
 
-with txt_correlated_coins.container():
-    st.markdown(f"Based on our records, we can recommend you to **{most_voted_trade_signal}** following coins as well")
-    st.markdown(f"##### {', '.join(correlated_coins)}")
+with txt_positive_correlated_coins.container():
+    st.markdown(f"Based on our analysis, we can recommend you to **{most_voted_trade_signal}** following coins as well")
+    st.markdown(f"##### {', '.join(positive_correlated_coins)}")
+
+with txt_least_correlated_coins.container():
+    st.markdown('Based on our analysis, these coins are least correlated coins')
+    st.markdown(f"##### {', '.join(least_correlated_coins)}")

@@ -9,7 +9,7 @@ from collections import Counter
 
 import streamlit as st
 
-from services.file_handler import delete_cache_files, get_model_time
+from util.file_handler import delete_cache_files, get_model_time
 
 def perform_clusterization():
     data = load_clustering_data()

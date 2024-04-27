@@ -6,7 +6,7 @@ import pandas as pd
 from neuralprophet import NeuralProphet
 
 from config import MODEL_NEURALPROPHET, NEURALPROPHET_CACHE, NEURALPROPHET_EVAL_CACHE, ONE_MONTH, ONE_WEEK, THREE_MONTHS
-from services.file_handler import get_temp_file_path, is_file_exits
+from util.file_handler import get_temp_file_path, is_file_exits
 
 def train_full_model(dataset, selected_coin, forecast_period: str) -> tuple[pd.DataFrame, pd.DataFrame]:
 

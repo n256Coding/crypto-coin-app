@@ -6,7 +6,7 @@ from pandas import DataFrame
 import numpy as np
 
 from config import MODEL_PROPHET, ONE_MONTH, ONE_WEEK, PROPHET_CACHE, PROPHET_EVAL_CACHE, THREE_MONTHS
-from services.file_handler import get_temp_file_path, is_file_exits
+from util.file_handler import get_temp_file_path, is_file_exits
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 def train_full_model(dataset: DataFrame, selected_coin: str, forecast_period: str):
