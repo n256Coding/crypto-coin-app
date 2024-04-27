@@ -10,7 +10,6 @@ st.set_page_config(page_title="Moving Average", page_icon="📈", layout="wide")
 st.markdown("# Moving Average")
 
 coin_data_df = get_coin_data(SELECTED_COINS)
-trade_signals = []
 
 # Input Panel
 col1, col2 = st.columns(2)
