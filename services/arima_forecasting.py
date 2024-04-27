@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 # Ignore harmless warnings
 import warnings
 
-from constants import ARIMA_CACHE, ARIMA_EVAL_CACHE, MODEL_ARIMA, ONE_MONTH, ONE_WEEK, THREE_MONTHS
+from config import ARIMA_CACHE, ARIMA_EVAL_CACHE, MODEL_ARIMA, ONE_MONTH, ONE_WEEK, THREE_MONTHS
 from services.file_handler import get_temp_file_path, is_file_exits
 warnings.filterwarnings("ignore")
 
@@ -85,13 +85,16 @@ def train_full_model(dataset: DataFrame, selected_coin: str, forecast_period: st
     elif forecast_period == THREE_MONTHS:
         period = 90
     
-    predictions, conf_int = result.predict(n_periods=period, return_conf_int=True)
+    predictions, _ = result.predict(n_periods=period, return_conf_int=True)
 
     forecast_dataframe = pd.DataFrame({
         "Prediction": predictions
     }, index=pd.to_datetime(predictions.index))
+    first_row = pd.DataFrame({
+        "Prediction": [temp_dataset_df.values[-1]]
+    }, index=pd.to_datetime([temp_dataset_df.index[-1]]))
 
-    return forecast_dataframe
+    return pd.concat([first_row, forecast_dataframe])
 
 def train_model(dataset: DataFrame, model_params: tuple, selected_coin: str):
 
@@ -125,9 +128,6 @@ def train_model(dataset: DataFrame, model_params: tuple, selected_coin: str):
     # predictions = result.predict(start, end, typ = 'levels').rename("Prediction")
     predictions, conf_int = result.predict(n_periods=len(test), return_conf_int=True)
     test.index = pd.to_datetime(test.index)
-
-    print("------------------------")
-    print(predictions)
 
     forecast_dataframe = pd.DataFrame({
         "Prediction": predictions

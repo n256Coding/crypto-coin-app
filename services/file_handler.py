@@ -3,7 +3,7 @@ import os
 from os import walk
 import time
 
-from constants import TEMP_DIR_NAME
+from config import TEMP_DIR_NAME
 
 def create_temp_folder_if_not_exists():
     Path(TEMP_DIR_NAME).mkdir(parents=True, exist_ok=True)

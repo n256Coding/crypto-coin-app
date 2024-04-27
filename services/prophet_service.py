@@ -5,7 +5,7 @@ import pandas as pd
 from pandas import DataFrame
 import numpy as np
 
-from constants import MODEL_PROPHET, ONE_MONTH, ONE_WEEK, PROPHET_CACHE, PROPHET_EVAL_CACHE, THREE_MONTHS
+from config import MODEL_PROPHET, ONE_MONTH, ONE_WEEK, PROPHET_CACHE, PROPHET_EVAL_CACHE, THREE_MONTHS
 from services.file_handler import get_temp_file_path, is_file_exits
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
@@ -46,11 +46,14 @@ def train_full_model(dataset: DataFrame, selected_coin: str, forecast_period: st
     # Make predictions for the test set
     forecast = model.predict(df_future)
 
-    forecast_df = pd.DataFrame({
+    forecast_dataframe = pd.DataFrame({
         "Prediction": forecast["yhat"].values, 
     }, index=pd.to_datetime(forecast["ds"].values))
+    first_row = pd.DataFrame({
+        "Prediction": [temp_dataset_df["y"].values[-1]]
+    }, index=pd.to_datetime([temp_dataset_df["ds"].values[-1]]))
 
-    return forecast_df
+    return pd.concat([first_row, forecast_dataframe])
 
 def train_model(dataset: DataFrame, selected_coin: str):
 

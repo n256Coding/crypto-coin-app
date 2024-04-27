@@ -11,7 +11,7 @@ import streamlit as st
 from keras.saving import load_model
 from sklearn.preprocessing import MinMaxScaler
 
-from constants import LSTM_CACHE, LSTM_EVAL_CACHE, MODEL_LSTM, ONE_MONTH, ONE_WEEK, THREE_MONTHS
+from config import LSTM_CACHE, LSTM_EVAL_CACHE, MODEL_LSTM, ONE_MONTH, ONE_WEEK, THREE_MONTHS
 from services.file_handler import get_temp_file_path, is_file_exits
 
 sequence_length = 10
@@ -127,11 +127,14 @@ def train_full_model(dataset: pd.DataFrame, selected_coin: str, forecast_period:
 
     datetime_index = pd.to_datetime(dataset.index)
     
-    forecast_series = pd.DataFrame({
+    forecast_dataframe = pd.DataFrame({
             "Prediction": predicted_sequence, 
     }, index=pd.date_range(start=datetime_index[-1], end=datetime_index[-1] + pd.Timedelta(days=(period-1))))
+    first_row = pd.DataFrame({
+        "Prediction": [temp_dataset_df[selected_coin].values[-1]]
+    }, index=pd.to_datetime([temp_dataset_df.index[-1]]))
 
-    return forecast_series
+    return pd.concat([first_row, forecast_dataframe])
 
 
 def compile_model(train_x):

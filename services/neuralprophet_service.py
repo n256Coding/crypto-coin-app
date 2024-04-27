@@ -5,7 +5,7 @@ import streamlit as st
 import pandas as pd
 from neuralprophet import NeuralProphet
 
-from constants import MODEL_NEURALPROPHET, NEURALPROPHET_CACHE, NEURALPROPHET_EVAL_CACHE, ONE_MONTH, ONE_WEEK, THREE_MONTHS
+from config import MODEL_NEURALPROPHET, NEURALPROPHET_CACHE, NEURALPROPHET_EVAL_CACHE, ONE_MONTH, ONE_WEEK, THREE_MONTHS
 from services.file_handler import get_temp_file_path, is_file_exits
 
 def train_full_model(dataset, selected_coin, forecast_period: str) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -42,11 +42,14 @@ def train_full_model(dataset, selected_coin, forecast_period: str) -> tuple[pd.D
     
     forecast = m.predict(future)
 
-    forecast_series = pd.DataFrame({
+    forecast_dataframe = pd.DataFrame({
         "Prediction": forecast["yhat1"].values, 
     }, index=pd.to_datetime(forecast["ds"].values))
+    first_row = pd.DataFrame({
+        "Prediction": [temp_dataset_df["y"].values[-1]]
+    }, index=pd.to_datetime([temp_dataset_df["ds"].values[-1]]))
 
-    return forecast_series
+    return pd.concat([first_row, forecast_dataframe])
 
 def train_model(dataset, selected_coin) -> tuple[pd.DataFrame, pd.DataFrame]:
 

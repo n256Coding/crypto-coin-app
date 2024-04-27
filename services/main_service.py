@@ -1,5 +1,5 @@
 import pandas as pd
-from constants import BUY, CLUSTER_COLUMN_NAME, COIN_COLUMN_NAME, MODEL_UPDATED_TIME, SAME, SELECTED_COINS, SELL
+from config import BUY, CLUSTER_COLUMN_NAME, COIN_COLUMN_NAME, CURRENT_DATA_SHOWN_DAYS, MODEL_UPDATED_TIME, SAME, SELECTED_COINS, SELL
 from data_loader import load_clustering_data, load_data
 from pandas import DataFrame
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, Normalizer
@@ -95,7 +95,7 @@ def prepare_forecast_dataset(coin_data_df: DataFrame, selected_coin_for_forecast
     updated_time_placeholder.text(MODEL_UPDATED_TIME.format(model_date))
 
     temp_df = pd.DataFrame({
-        "Current": coin_data_df[selected_coin_for_forecast],
+        "Current": coin_data_df[selected_coin_for_forecast].iloc[-CURRENT_DATA_SHOWN_DAYS:],
     }, index=coin_data_df.index)
 
     temp_df1 = pd.DataFrame({

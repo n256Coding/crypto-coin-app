@@ -3,7 +3,7 @@ import yfinance as yf
 from pathlib import Path
 import os
 
-from constants import CLUSTER_DATASET_CACHE_NAME, CLUSTER_DATASET_PERIOD, CURRENCY_LIST, DATASET_CACHE_NAME, DATASET_PERIOD, INTERESTED_DATA_FIELD, TEMP_DIR_NAME
+from config import CLUSTER_DATASET_CACHE_NAME, CLUSTER_DATASET_PERIOD, CURRENCY_LIST, DATASET_CACHE_NAME, DATASET_PERIOD, INTERESTED_DATA_FIELD, TEMP_DIR_NAME
 from services.file_handler import create_temp_folder_if_not_exists
 
 def load_clustering_data():
