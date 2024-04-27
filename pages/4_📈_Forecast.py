@@ -28,15 +28,11 @@ with st.sidebar:
                 rss_data = load_financial_rss_feeds_dict()
                 for item in rss_data:
                     st.markdown(f"{item.get('content')}  \n:blue[{item.get('link')}]")
-                    # st.markdown()
-                    # st.divider()
-        # st.table(rss_data)
-
 
 # Input Panel
 col1, col2 = st.columns(2)
 with col1:
-    selected_coin_for_forecast = st.selectbox('Select the coin which you want to get the assitance with', SELECTED_COINS, key="forecast_coin_select")
+    selected_coin_for_forecast = st.selectbox('Select the coin which you want to get the assistance with', SELECTED_COINS, key="forecast_coin_select")
 
 with col2:
     forecast_period = st.selectbox('Targetted trading period', (ONE_WEEK, ONE_MONTH, THREE_MONTHS))
@@ -89,10 +85,7 @@ with st.container(border=True):
     st.subheader('Forecasted Return Calculator', divider='rainbow')
     col_invest_calc_input_1, col_invest_calc_input_2 = st.columns([.3, .7])
     with col_invest_calc_input_1:
-        amount_to_invest = st.number_input(f'Enter amount in {BASE_CURRENCY} to invest', min_value=1)
-
-    # with col_invest_calc_input_2:
-    #     pass
+        amount_to_invest = st.number_input(f'Enter desired invesment in {BASE_CURRENCY}', min_value=1)
 
     st.write(f'If you invest {amount_to_invest} {BASE_CURRENCY} today on {selected_coin_for_forecast.split("-")[0]}, at the end of {forecast_period.lower()},')
     col_invest_calc_1, col_invest_calc_2, col_invest_calc_3, col_invest_calc_4 = st.columns(4)
@@ -138,7 +131,6 @@ with st.container(border=False):
 
         fig = px.line(plotted_arima_df, labels={'index': 'Timestamp'})
         st.plotly_chart(fig, use_container_width=True)
-        # st.line_chart(data=plotted_arima_df)
 
     with tab_prophet:
         prophet_updated_time_placeholder = st.empty()
@@ -158,7 +150,8 @@ with st.container(border=False):
         prophet_expected_return = calculate_expected_return(coin_data_df, selected_coin_for_forecast, forecasted_prophet_dataset, amount_to_invest)
         update_profit_loss_placeholder(txt_prophet_invest_calc, MODEL_PROPHET, *prophet_expected_return)
 
-        st.line_chart(data=plotted_prophet_df)
+        fig = px.line(plotted_prophet_df, labels={'index': 'Timestamp'})
+        st.plotly_chart(fig, use_container_width=True)
 
     with tab_neural_prophet:
         neuralprophet_updated_time_placeholder = st.empty()
@@ -179,7 +172,8 @@ with st.container(border=False):
         neuralprophet_expected_return = calculate_expected_return(coin_data_df, selected_coin_for_forecast, forecasted_neuralprophet_dataset, amount_to_invest)
         update_profit_loss_placeholder(txt_neuralprophet_invest_calc, MODEL_NEURALPROPHET, *neuralprophet_expected_return)
 
-        st.line_chart(data=plotted_neuralprophet_df)
+        fig = px.line(plotted_neuralprophet_df, labels={'index': 'Timestamp'})
+        st.plotly_chart(fig, use_container_width=True)
 
     with tab_lstm:
         lstm_updated_time_placeholder = st.empty()
@@ -204,7 +198,8 @@ with st.container(border=False):
         #     "Forecasted": forecasted_dataset["Prediction"]
         # }, index=pd.to_datetime(coin_data_df.index.union(forecasted_dataset.index)))
 
-        st.line_chart(data=plotted_lstm_df)
+        fig = px.line(plotted_lstm_df, labels={'index': 'Timestamp'})
+        st.plotly_chart(fig, use_container_width=True)
 
 most_voted_trade_signal = get_most_voted_trade_signal(trade_signals)
 
