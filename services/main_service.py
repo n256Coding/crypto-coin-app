@@ -1,6 +1,6 @@
 import pandas as pd
-from config import CLUSTER_COLUMN_NAME, COIN_COLUMN_NAME, CURRENT_DATA_SHOWN_DAYS, SELECTED_COINS
-from constant import BUY, MODEL_UPDATED_TIME, SAME, SELL
+from config import BASE_CURRENCY, CLUSTER_COLUMN_NAME, COIN_COLUMN_NAME, CURRENT_DATA_SHOWN_DAYS, SELECTED_COINS
+from constant import BUY, LOSS, MODEL_UPDATED_TIME, SAME, SELL, TRAINED_MODELS_ARE_CACHED
 from data_loader import load_clustering_data, load_data
 from pandas import DataFrame
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, Normalizer
@@ -93,7 +93,7 @@ def prepare_forecast_dataset(coin_data_df: DataFrame, selected_coin_for_forecast
                              forecasted_dataset: DataFrame, model_cache_type: str) -> DataFrame:
     
     model_date = get_model_time(selected_coin_for_forecast, model_cache_type)
-    updated_time_placeholder.text(MODEL_UPDATED_TIME.format(model_date))
+    updated_time_placeholder.text(MODEL_UPDATED_TIME.format(model_date), help=TRAINED_MODELS_ARE_CACHED)
 
     temp_df = pd.DataFrame({
         "Current": coin_data_df[selected_coin_for_forecast].iloc[-CURRENT_DATA_SHOWN_DAYS:],
@@ -128,3 +128,11 @@ def update_trade_signal_placeholder(placeholder, trade_signal: str, model_name: 
 def get_most_voted_trade_signal(trade_signal_list: list) -> str:
     trade_signal_count = Counter(trade_signal_list)
     return trade_signal_count.most_common(1)[0][0]
+
+def update_profit_loss_placeholder(placeholder, model_name: str, *args):
+    expected_return, income_loss, indicator = args
+
+    with placeholder.container():
+        st.markdown(f'###### {model_name}')
+        st.markdown(f'''Expected return: **{expected_return} {BASE_CURRENCY}**  
+                    {indicator}: **:{"red" if indicator == LOSS else "green"}[{income_loss} {BASE_CURRENCY}]**''')

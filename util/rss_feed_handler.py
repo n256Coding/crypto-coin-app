@@ -23,6 +23,6 @@ def load_financial_rss_feeds_dict() -> dict:
 
     rss = RSSParser.parse(response.text)
 
-    latest_rss_feeds = [{'content': f'[{item.pub_date.content}]\n{item.title.content}', 'link': item.link.content} for item in rss.channel.items]
+    latest_rss_feeds = [{'content': f'*:gray[[{item.pub_date.content}]]*  \n{item.title.content}', 'link': f'For more details: [Click here]({item.link.content})'} for item in rss.channel.items]
 
     return latest_rss_feeds
