@@ -9,12 +9,28 @@ from services import lstm_service, neuralprophet_service, prophet_service, arima
 import streamlit as st
 import plotly.express as px
 
+from util.rss_feed_handler import load_financial_rss_feeds, load_financial_rss_feeds_dict
+
 st.set_page_config(page_title="Trade Assistant - Forcast", page_icon="📈", layout="wide")
 
 st.markdown("# Trade Assistant - Forcast")
 
 coin_data_df = get_coin_data(SELECTED_COINS)
 trade_signals = []
+
+with st.sidebar:
+    # st.write('## Latest Financial News Feed')
+    st.subheader('Latest Financial News Feed', help='News feed is powered by CNBC', divider='rainbow')
+    with st.expander("Click to see"):
+        with st.spinner("Loading latest financial news ..."):
+
+            with st.container():
+                rss_data = load_financial_rss_feeds_dict()
+                for item in rss_data:
+                    st.write(item.get('content'))
+                    st.write(item.get('link'))
+                    st.divider()
+        # st.table(rss_data)
 
 
 # Input Panel
