@@ -1,7 +1,8 @@
 import pandas as pd
 import streamlit as st
 
-from config import ARIMA_EVAL_CACHE, EVALUATIONS, LSTM_EVAL_CACHE, MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, NEURALPROPHET_EVAL_CACHE, PROPHET_EVAL_CACHE, SELECTED_COINS
+from config import ARIMA_EVAL_CACHE, EVALUATIONS, LSTM_EVAL_CACHE, NEURALPROPHET_EVAL_CACHE, PROPHET_EVAL_CACHE, SELECTED_COINS
+from constant import MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET
 from services import arima_forecasting, prophet_service, neuralprophet_service, lstm_service
 from util.file_handler import get_temp_file_path, is_file_exits
 from services.main_service import get_coin_data

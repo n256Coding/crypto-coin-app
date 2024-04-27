@@ -21,13 +21,6 @@ COIN_COLUMN_NAME = "Coin"
 CLUSTER_COLUMN_NAME = "Cluster"
 
 
-# Model Names
-MODEL_ARIMA = 'ARIMA'
-MODEL_PROPHET = 'Prophet'
-MODEL_NEURALPROPHET = 'Neural Prophet'
-MODEL_LSTM = 'LSTM'
-
-
 # Model Cache Names
 ARIMA_EVAL_CACHE = "arima_eval_cache"
 PROPHET_EVAL_CACHE = "prophet_eval_cache"

@@ -14,7 +14,8 @@ from datetime import datetime, timedelta
 # Ignore harmless warnings
 import warnings
 
-from config import ARIMA_CACHE, ARIMA_EVAL_CACHE, MODEL_ARIMA, ONE_MONTH, ONE_WEEK, THREE_MONTHS
+from config import ARIMA_CACHE, ARIMA_EVAL_CACHE, ONE_MONTH, ONE_WEEK, THREE_MONTHS
+from constant import MODEL_ARIMA
 from util.file_handler import get_temp_file_path, is_file_exits
 warnings.filterwarnings("ignore")
 

@@ -5,7 +5,8 @@ import pandas as pd
 from pandas import DataFrame
 import numpy as np
 
-from config import MODEL_PROPHET, ONE_MONTH, ONE_WEEK, PROPHET_CACHE, PROPHET_EVAL_CACHE, THREE_MONTHS
+from config import ONE_MONTH, ONE_WEEK, PROPHET_CACHE, PROPHET_EVAL_CACHE, THREE_MONTHS
+from constant import MODEL_PROPHET
 from util.file_handler import get_temp_file_path, is_file_exits
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
