@@ -1,6 +1,6 @@
 from config import (ARIMA_CACHE, BASE_CURRENCY, COIN_SUGGESTION_THRESHOULD, LSTM_CACHE, MAX_SUGGESTED_COINS, NEURALPROPHET_CACHE, ONE_MONTH, 
                        ONE_WEEK, PROPHET_CACHE, SELECTED_COINS, THREE_MONTHS)
-from constant import BUY, MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, MODEL_RETRAIN_WILL_TAKE_TIME, MODEL_TRAINING_IN_PROGRESS, SELL, UPDATE_MODEL
+from constant import MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, MODEL_RETRAIN_WILL_TAKE_TIME, MODEL_TRAINING_IN_PROGRESS, UPDATE_MODEL
 from services.main_service import (get_coin_data, get_most_voted_trade_signal, get_trade_signal, 
                                    prepare_forecast_dataset, reload_dataset_and_train_model, update_profit_loss_placeholder, 
                                    update_trade_signal_placeholder)
@@ -19,13 +19,13 @@ coin_data_df = get_coin_data(SELECTED_COINS)
 trade_signals = []
 
 with st.sidebar:
-    # st.write('## Latest Financial News Feed')
     st.subheader('Latest Financial News Feed', help='News feed is powered by CNBC', divider='rainbow')
+    
     with st.expander("Click to hide/see", expanded=True):
         with st.spinner("Loading latest financial news ..."):
-
             with st.container():
                 rss_data = load_financial_rss_feeds_dict()
+                
                 for item in rss_data:
                     st.markdown(f"{item.get('content')}  \n:blue[{item.get('link')}]")
 
