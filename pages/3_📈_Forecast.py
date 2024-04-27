@@ -1,7 +1,7 @@
 from config import (ARIMA_CACHE, COIN_SUGGESTION_THRESHOULD, LSTM_CACHE, MAX_SUGGESTED_COINS, MODEL_ARIMA, 
-                       MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, MODEL_RETRAIN_WILL_TAKE_TIME, 
-                       MODEL_TRAINING_IN_PROGRESS, NEURALPROPHET_CACHE, ONE_MONTH, ONE_WEEK, PROPHET_CACHE, 
-                       SELECTED_COINS, THREE_MONTHS, UPDATE_MODEL)
+                       MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, NEURALPROPHET_CACHE, ONE_MONTH, 
+                       ONE_WEEK, PROPHET_CACHE, SELECTED_COINS, THREE_MONTHS)
+from constant import MODEL_RETRAIN_WILL_TAKE_TIME, MODEL_TRAINING_IN_PROGRESS, UPDATE_MODEL
 from services.main_service import (get_coin_data, get_most_voted_trade_signal, get_trade_signal, 
                                    prepare_forecast_dataset, reload_dataset_and_train_model, 
                                    update_trade_signal_placeholder)

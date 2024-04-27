@@ -1,5 +1,6 @@
 import pandas as pd
-from config import BUY, CLUSTER_COLUMN_NAME, COIN_COLUMN_NAME, CURRENT_DATA_SHOWN_DAYS, MODEL_UPDATED_TIME, SAME, SELECTED_COINS, SELL
+from config import CLUSTER_COLUMN_NAME, COIN_COLUMN_NAME, CURRENT_DATA_SHOWN_DAYS, SELECTED_COINS
+from constant import BUY, MODEL_UPDATED_TIME, SAME, SELL
 from data_loader import load_clustering_data, load_data
 from pandas import DataFrame
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, Normalizer
