@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+import plotly.express as px
 
 from config import ARIMA_EVAL_CACHE, EVALUATIONS, LSTM_EVAL_CACHE, NEURALPROPHET_EVAL_CACHE, PROPHET_EVAL_CACHE, SELECTED_COINS
 from constant import MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET
@@ -15,19 +16,27 @@ st.write(
     """This section trains and evaluate the models."""
 )
 
+selected_coin_for_evaluation = st.selectbox('Select the coin which you want to evaluate on', SELECTED_COINS, key="eval_coin_select")
+
+plt_overall_prediction = st.empty()
+plt_overall_prediction.markdown("Overall evaluation diagram is preparing in progress ...")
+overall_prediction_df = pd.DataFrame()
+
 tab_arima, tab_prophet, tab_neural_prophet, tab_lstm = st.tabs([MODEL_ARIMA, MODEL_PROPHET, MODEL_NEURALPROPHET, MODEL_LSTM])
 
 
 coin_data_df = get_coin_data(SELECTED_COINS)
 
 with tab_arima:
-    selected_coin_for_evaluation = st.selectbox('Select the coin which you want to evaluate on', SELECTED_COINS, key="arima_eval_coin_select")
 
     with st.spinner(f'Finding the best {MODEL_ARIMA.lower()} parameters...'):
         best_params = arima_forecasting.find_best_params(coin_data_df, selected_coin_for_evaluation)
 
     with st.spinner(f'Fitting the {MODEL_ARIMA.lower()} model...'):
         prediction_data, test_data = arima_forecasting.train_model(coin_data_df, best_params, selected_coin_for_evaluation)
+
+    overall_prediction_df = test_data.copy(deep=True)
+    overall_prediction_df[MODEL_ARIMA] = prediction_data["Prediction"]
 
     result_df = pd.concat([prediction_data, test_data], axis=1)
 
@@ -49,13 +58,15 @@ with tab_arima:
             st.toast(f"{MODEL_ARIMA} model cache clear triggered!")
 
 with tab_prophet:
-    selected_coin_for_evaluation = st.selectbox('Select the coin which you want to evaluate on', SELECTED_COINS, key="prophet_eval_coin_select")
     
     with st.spinner(f"{MODEL_PROPHET.lower()} model is training in progress ..."):
         prediction_data, test_data, full_prediction = prophet_service.train_model(coin_data_df, selected_coin_for_evaluation)
 
+    overall_prediction_df[MODEL_PROPHET] = prediction_data["Prediction"]
+
     result_df = pd.concat([prediction_data, test_data], axis=1)
     st.line_chart(data=result_df)
+
 
     with st.spinner("Evaluating ..."):
         rmse_score, mse_score, mae_score = prophet_service.get_evaluations(prediction_data, test_data)
@@ -72,10 +83,11 @@ with tab_prophet:
             st.toast(f"{MODEL_PROPHET} cache clear triggered!")
 
 with tab_neural_prophet:
-    selected_coin_for_evaluation = st.selectbox('Select the coin which you want to evaluate on', SELECTED_COINS, key="neuralprophet_eval_coin_select")
 
     with st.spinner(f"{MODEL_NEURALPROPHET.lower()} model is training in progress ..."):
         prediction_data, test_data = neuralprophet_service.train_model(coin_data_df, selected_coin_for_evaluation)
+
+    overall_prediction_df[MODEL_NEURALPROPHET] = prediction_data["Prediction"]
 
     result_df = pd.concat([prediction_data, test_data], axis=1)
     st.line_chart(data=result_df)
@@ -95,10 +107,11 @@ with tab_neural_prophet:
             st.toast(f"{MODEL_NEURALPROPHET} model cache clear triggered!")
 
 with tab_lstm:
-    selected_coin_for_evaluation = st.selectbox('Select the coin which you want to evaluate on', SELECTED_COINS, key="lstm_eval_coin_select")
 
     with st.spinner(f"{MODEL_LSTM.lower()} model is training in progress ..."):
         prediction_data, test_data = lstm_service.train_model(coin_data_df, selected_coin_for_evaluation)
+
+    overall_prediction_df[MODEL_LSTM] = prediction_data["Prediction"]
 
     result_df = pd.concat([prediction_data, test_data], axis=1)
     st.line_chart(data=result_df)
@@ -116,3 +129,7 @@ with tab_lstm:
     if is_file_exits(cached_model_name):
         if st.button("Reset Model Cache", key="lstm_cache_clear"):
             st.toast(f"{MODEL_LSTM} model cache clear triggered!")
+
+with plt_overall_prediction.container():
+    fig = px.line(overall_prediction_df, labels={'index': 'Timestamp'})
+    st.plotly_chart(fig, use_container_width=True)
