@@ -10,6 +10,13 @@ from constant import MODEL_PROPHET
 from util.file_handler import get_temp_file_path, is_file_exits
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
+def build_model(dataframe: pd.DataFrame):
+    """Initialize and fit the prophet model"""
+    model = Prophet(yearly_seasonality=True)
+    model.fit(dataframe)
+
+    return model
+
 def train_full_model(dataset: DataFrame, selected_coin: str, forecast_period: str):
 
     temp_dataset_df = dataset[selected_coin]
@@ -19,9 +26,7 @@ def train_full_model(dataset: DataFrame, selected_coin: str, forecast_period: st
     cached_model_name = get_temp_file_path(selected_coin, PROPHET_CACHE)
 
     if not is_file_exits(cached_model_name):
-        # Initialize and fit the model
-        model = Prophet(yearly_seasonality=True, weekly_seasonality=True)
-        model.fit(temp_dataset_df)
+        model = build_model(temp_dataset_df)
 
         with open(cached_model_name, "wb") as f:
             pickle.dump(model, f)
@@ -69,9 +74,7 @@ def train_model(dataset: DataFrame, selected_coin: str):
     cached_model_name = get_temp_file_path(selected_coin, PROPHET_EVAL_CACHE)
 
     if not is_file_exits(cached_model_name):
-        # Initialize and fit the model
-        model = Prophet()
-        model.fit(train_df)
+        model = build_model(train_df)
 
         with open(cached_model_name, "wb") as f:
             pickle.dump(model, f)

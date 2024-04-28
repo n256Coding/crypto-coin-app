@@ -29,7 +29,6 @@ def train_model(dataset: pd.DataFrame, selected_coin: str):
     train_y, test_y = labels[:train_size], labels[train_size:]
 
     cached_model_name = get_temp_file_path(selected_coin, LSTM_EVAL_CACHE)
-    cached_scaler_name = get_temp_file_path(selected_coin, LSTM_EVAL_CACHE, is_scaler=True)
 
     if not is_file_exits(cached_model_name):
 
@@ -46,26 +45,21 @@ def train_model(dataset: pd.DataFrame, selected_coin: str):
         )
 
         model.save(cached_model_name + '.keras')
-        with open(cached_scaler_name, "wb") as f:
-            pickle.dump(scaler, f)
 
     else:
         model = load_model(cached_model_name)
-        with open(cached_scaler_name, "rb") as f:
-            scaler = pickle.load(f)
 
         st.toast(f'{MODEL_LSTM} model loaded from cache', icon='ℹ️')
 
     
     test_y_copies = np.repeat(test_y.reshape(-1, 1), test_x.shape[-1], axis=1)
     true_temp = scaler.inverse_transform(test_y_copies)[:,0]
-
+    
     prediction = model.predict(test_x)
     prediction_temp = scaler.inverse_transform(prediction)[:,0]
 
-
-    forecast_series = pd.DataFrame({
-        "Prediction": prediction_temp[-len(test_x):], 
+    forecast_series = pd.DataFrame({ 
+        "Prediction": prediction_temp, 
     }, index=pd.to_datetime(dataset.index[-len(test_x):]))
     test_series = pd.DataFrame({
         "Actual": true_temp[-len(test_x):], 
