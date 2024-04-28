@@ -137,9 +137,6 @@ def compile_model(train_x):
     model.add(LSTM(128, input_shape=(train_x.shape[1], train_x.shape[2]), return_sequences=True))
     model.add(Dropout(0.6))
 
-    # model.add(LSTM(64, return_sequences=True))
-    # model.add(Dropout(0.2))
-
     model.add(LSTM(32))
     model.add(Dropout(0.7))
 
