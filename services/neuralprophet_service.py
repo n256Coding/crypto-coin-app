@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.preprocessing import MinMaxScaler
 import streamlit as st
 import pandas as pd
 from neuralprophet import NeuralProphet
@@ -15,18 +16,26 @@ def train_full_model(dataset, selected_coin, forecast_period: str) -> tuple[pd.D
     temp_dataset_df = temp_dataset_df.reset_index()
     temp_dataset_df.columns = ["ds", "y"]
 
+    scaler = MinMaxScaler()
+    temp_dataset_df["y"] = scaler.fit_transform(temp_dataset_df["y"].values.reshape(-1, 1))
+
     cached_model_name = get_temp_file_path(selected_coin, NEURALPROPHET_CACHE)
+    cached_scaler_name = get_temp_file_path(selected_coin, NEURALPROPHET_CACHE, is_scaler=True)
     if not is_file_exits(cached_model_name):
-        m = NeuralProphet(n_lags=0, yearly_seasonality=True)
+        m = NeuralProphet(yearly_seasonality=True)
         m.fit(temp_dataset_df, freq='D', epochs=500, batch_size=50)
 
         with open(cached_model_name, "wb") as f:
             pickle.dump(m, f)
+        with open(cached_scaler_name, "wb") as f:
+            pickle.dump(scaler, f)
     
     else:
         with open(cached_model_name, "rb") as f:
             m = pickle.load(f)
             m.restore_trainer()
+        with open(cached_scaler_name, "rb") as f:
+            scaler = pickle.load(f)
 
         st.toast(f"{MODEL_NEURALPROPHET} model loaded from cache", icon='ℹ️')
     
@@ -44,10 +53,10 @@ def train_full_model(dataset, selected_coin, forecast_period: str) -> tuple[pd.D
     forecast = m.predict(future)
 
     forecast_dataframe = pd.DataFrame({
-        "Prediction": forecast["yhat1"].values, 
+        "Prediction": scaler.inverse_transform(forecast["yhat1"].values.reshape(-1, 1)).reshape(-1), 
     }, index=pd.to_datetime(forecast["ds"].values))
     first_row = pd.DataFrame({
-        "Prediction": [temp_dataset_df["y"].values[-1]]
+        "Prediction": scaler.inverse_transform(temp_dataset_df["y"].values[-1].reshape(-1, 1)).reshape(-1)
     }, index=pd.to_datetime([temp_dataset_df["ds"].values[-1]]))
 
     return pd.concat([first_row, forecast_dataframe])
@@ -58,7 +67,8 @@ def train_model(dataset, selected_coin) -> tuple[pd.DataFrame, pd.DataFrame]:
     temp_dataset_df = temp_dataset_df.reset_index()
     temp_dataset_df.columns = ["ds", "y"]
 
-    
+    scaler = MinMaxScaler()
+    temp_dataset_df["y"] = scaler.fit_transform(temp_dataset_df["y"])
 
     # train_df, test_df = m.split_df(temp_dataset_df, freq="MS", valid_p=0.2)
     train_size = int(0.8 * len(temp_dataset_df))
@@ -66,27 +76,32 @@ def train_model(dataset, selected_coin) -> tuple[pd.DataFrame, pd.DataFrame]:
     test_df = temp_dataset_df.iloc[train_size:]
 
     cached_model_name = get_temp_file_path(selected_coin, NEURALPROPHET_EVAL_CACHE)
+    cached_scaler_name = get_temp_file_path(selected_coin, NEURALPROPHET_EVAL_CACHE, is_scaler=True)
     if not is_file_exits(cached_model_name):
         m = NeuralProphet(yearly_seasonality=True)
-        m.fit(train_df, freq='D', epochs=1000)
+        m.fit(train_df, freq='D', epochs=500, batch_size=50)
 
         with open(cached_model_name, "wb") as f:
             pickle.dump(m, f)
+        with open(cached_scaler_name, "wb") as f:
+            pickle.dump(scaler, f)
     
     else:
         with open(cached_model_name, "rb") as f:
             m = pickle.load(f)
             m.restore_trainer()
+        with open(cached_scaler_name, "rb") as f:
+            scaler = pickle.load(f)
 
         st.toast(f"{MODEL_NEURALPROPHET} model loaded from cache", icon='ℹ️')
     
     forecast = m.predict(test_df)
 
     forecast_series = pd.DataFrame({
-        "Prediction": forecast["yhat1"].values, 
+        "Prediction": scaler.inverse_transform(forecast["yhat1"].values), 
     }, index=pd.to_datetime(forecast["ds"].values))
     test_series = pd.DataFrame({
-        "Actual": test_df["y"].values, 
+        "Actual": scaler.inverse_transform(test_df["y"].values), 
     }, index=pd.to_datetime(test_df["ds"].values))
 
     return forecast_series, test_series
