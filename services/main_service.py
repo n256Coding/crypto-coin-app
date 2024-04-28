@@ -1,7 +1,7 @@
 import pandas as pd
 from config import BASE_CURRENCY, CLUSTER_COLUMN_NAME, COIN_COLUMN_NAME, CURRENT_DATA_SHOWN_DAYS, SELECTED_COINS
 from constant import BUY, LOSS, MODEL_UPDATED_TIME, SAME, SELL, TRAINED_MODELS_ARE_CACHED
-from data_loader import load_clustering_data, load_data
+from data_loader import delete_dataset_cache, load_clustering_data, load_data
 from pandas import DataFrame
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, Normalizer
 from sklearn.decomposition import PCA
@@ -74,14 +74,13 @@ def clusterize(data: DataFrame):
 
     return data
 
-def reload_dataset_and_train_model(selected_coin_for_forecast, model_type):
+def reload_dataset_and_train_model(selected_coin, model_type):
     print("Calling data reload .............")
     with st.spinner("Clearing the old dataset"):
-        # delete_dataset_cache() TODO: temporarily commented 
-        pass
+        delete_dataset_cache()
             
     with st.spinner("Deleting the model cache"):
-        delete_cache_files(selected_coin_for_forecast, model_type)
+        delete_cache_files(selected_coin, model_type)
 
     with st.spinner("Downloading the latest data from Yahoo Finance ..."):
         coin_data_df = get_coin_data(SELECTED_COINS)

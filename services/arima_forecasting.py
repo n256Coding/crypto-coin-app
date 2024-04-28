@@ -97,7 +97,7 @@ def train_full_model(dataset: DataFrame, selected_coin: str, forecast_period: st
 
     return pd.concat([first_row, forecast_dataframe])
 
-def train_model(dataset: DataFrame, model_params: tuple, selected_coin: str):
+def train_model(dataset: DataFrame, selected_coin: str):
 
     temp_dataset_df = dataset[selected_coin]
 
@@ -111,7 +111,7 @@ def train_model(dataset: DataFrame, model_params: tuple, selected_coin: str):
     if not is_file_exits(cached_model_name):
         # model = SARIMAX(train, order = model_params[0], seasonal_order = model_params[1], freq='D')
         # model = ARIMA(order = model_params[0], seasonal_order = model_params[1])
-        result = pm.auto_arima(train, error_action='ignore', suppress_warnings=True, D=1, seasonal=True, m=12)
+        result = pm.auto_arima(train, error_action='ignore', suppress_warnings=True, D=2, seasonal=True, m=12)
         # result = model.fit(train)
 
         with open(cached_model_name, "wb") as f:

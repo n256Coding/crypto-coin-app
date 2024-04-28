@@ -6,7 +6,7 @@ from config import ARIMA_EVAL_CACHE, EVALUATIONS, LSTM_EVAL_CACHE, NEURALPROPHET
 from constant import MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET
 from services import arima_forecasting, prophet_service, neuralprophet_service, lstm_service
 from util.file_handler import get_temp_file_path, is_file_exits
-from services.main_service import get_coin_data
+from services.main_service import get_coin_data, reload_dataset_and_train_model
 
 st.set_page_config(page_title="Model Evaluations", page_icon="📈")
 
@@ -29,11 +29,14 @@ coin_data_df = get_coin_data(SELECTED_COINS)
 
 with tab_arima:
 
-    with st.spinner(f'Finding the best {MODEL_ARIMA.lower()} parameters...'):
-        best_params = arima_forecasting.find_best_params(coin_data_df, selected_coin_for_evaluation)
+    cached_model_name = get_temp_file_path(selected_coin_for_evaluation, ARIMA_EVAL_CACHE)
+    if is_file_exits(cached_model_name):
+        if st.button('Reset Model Cache', key="arima_cache_clear"):
+            reload_dataset_and_train_model(selected_coin_for_evaluation, ARIMA_EVAL_CACHE)
+            st.toast(f"{MODEL_ARIMA} model cache clear triggered!")
 
     with st.spinner(f'Fitting the {MODEL_ARIMA.lower()} model...'):
-        prediction_data, test_data = arima_forecasting.train_model(coin_data_df, best_params, selected_coin_for_evaluation)
+        prediction_data, test_data = arima_forecasting.train_model(coin_data_df, selected_coin_for_evaluation)
 
     overall_prediction_df = test_data.copy(deep=True)
     overall_prediction_df[MODEL_ARIMA] = prediction_data["Prediction"]
@@ -52,12 +55,13 @@ with tab_arima:
 
     EVALUATIONS[MODEL_ARIMA] = [rmse_score, mse_score, mae_score]
 
-    cached_model_name = get_temp_file_path(selected_coin_for_evaluation, ARIMA_EVAL_CACHE)
-    if is_file_exits(cached_model_name):
-        if st.button('Reset Model Cache', key="arima_cache_clear"):
-            st.toast(f"{MODEL_ARIMA} model cache clear triggered!")
-
 with tab_prophet:
+
+    cached_model_name = get_temp_file_path(selected_coin_for_evaluation, PROPHET_EVAL_CACHE)
+    if is_file_exits(cached_model_name):
+        if st.button('Reset Model Cache', key="prophet_cache_clear"):
+            reload_dataset_and_train_model(selected_coin_for_evaluation, PROPHET_EVAL_CACHE)
+            st.toast(f"{MODEL_PROPHET} cache clear triggered!")
     
     with st.spinner(f"{MODEL_PROPHET.lower()} model is training in progress ..."):
         prediction_data, test_data, full_prediction = prophet_service.train_model(coin_data_df, selected_coin_for_evaluation)
@@ -77,12 +81,13 @@ with tab_prophet:
 
     EVALUATIONS[MODEL_PROPHET] = [rmse_score, mse_score, mae_score]
 
-    cached_model_name = get_temp_file_path(selected_coin_for_evaluation, PROPHET_EVAL_CACHE)
-    if is_file_exits(cached_model_name):
-        if st.button('Reset Model Cache', key="prophet_cache_clear"):
-            st.toast(f"{MODEL_PROPHET} cache clear triggered!")
-
 with tab_neural_prophet:
+
+    cached_model_name = get_temp_file_path(selected_coin_for_evaluation, NEURALPROPHET_EVAL_CACHE)
+    if is_file_exits(cached_model_name):
+        if st.button("Reset Model Cache", key="neuralprophet_cache_clear"):
+            reload_dataset_and_train_model(selected_coin_for_evaluation, NEURALPROPHET_EVAL_CACHE)
+            st.toast(f"{MODEL_NEURALPROPHET} model cache clear triggered!")
 
     with st.spinner(f"{MODEL_NEURALPROPHET.lower()} model is training in progress ..."):
         prediction_data, test_data = neuralprophet_service.train_model(coin_data_df, selected_coin_for_evaluation)
@@ -101,12 +106,13 @@ with tab_neural_prophet:
 
     EVALUATIONS[MODEL_NEURALPROPHET] = [rmse_score, mse_score, mae_score]
 
-    cached_model_name = get_temp_file_path(selected_coin_for_evaluation, NEURALPROPHET_EVAL_CACHE)
-    if is_file_exits(cached_model_name):
-        if st.button("Reset Model Cache", key="neuralprophet_cache_clear"):
-            st.toast(f"{MODEL_NEURALPROPHET} model cache clear triggered!")
-
 with tab_lstm:
+
+    cached_model_name = get_temp_file_path(selected_coin_for_evaluation, LSTM_EVAL_CACHE)
+    if is_file_exits(cached_model_name):
+        if st.button("Reset Model Cache", key="lstm_cache_clear"):
+            reload_dataset_and_train_model(selected_coin_for_evaluation, LSTM_EVAL_CACHE)
+            st.toast(f"{MODEL_LSTM} model cache clear triggered!")
 
     with st.spinner(f"{MODEL_LSTM.lower()} model is training in progress ..."):
         prediction_data, test_data = lstm_service.train_model(coin_data_df, selected_coin_for_evaluation)
@@ -125,10 +131,6 @@ with tab_lstm:
 
     EVALUATIONS[MODEL_LSTM] = [rmse_score, mse_score, mae_score]
 
-    cached_model_name = get_temp_file_path(selected_coin_for_evaluation, LSTM_EVAL_CACHE)
-    if is_file_exits(cached_model_name):
-        if st.button("Reset Model Cache", key="lstm_cache_clear"):
-            st.toast(f"{MODEL_LSTM} model cache clear triggered!")
 
 with plt_overall_prediction.container():
     fig = px.line(overall_prediction_df, labels={'index': 'Timestamp'})
