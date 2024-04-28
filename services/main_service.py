@@ -16,7 +16,7 @@ def perform_clusterization():
     data = load_clustering_data()
     data = transpose(data)
     data = preprocess(data)
-    data = dimentionality_reduction(data, None)
+    data = dimentionality_reduction(data)
     data = clusterize(data)
 
     return data
@@ -43,7 +43,7 @@ def preprocess(data: DataFrame):
 
     return data
 
-def dimentionality_reduction(data: DataFrame, algorithm: str):
+def dimentionality_reduction(data: DataFrame):
     pca = PCA(n_components=10)
     data_columns = [item for item in data.columns.tolist() if COIN_COLUMN_NAME not in item]
     components = pca.fit_transform(data[data_columns])
@@ -53,7 +53,6 @@ def dimentionality_reduction(data: DataFrame, algorithm: str):
     component_names = [f"PC{i+1}" for i in range(components.shape[1])]
 
     pca_df[component_names] = components
-    # pca_df.insert(loc=0, column=COIN_COLUMN_NAME, value=data[COIN_COLUMN_NAME])
 
     return pca_df
 

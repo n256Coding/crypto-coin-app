@@ -19,9 +19,6 @@ st.write(
     """This section performs various explanatory data analysis (EDA) on the dataset."""
 )
 
-progress_bar = st.sidebar.progress(0)
-status_text = st.sidebar.empty()
-
 coin_data_df = get_coin_data(SELECTED_COINS)
 
 coins = st.multiselect(

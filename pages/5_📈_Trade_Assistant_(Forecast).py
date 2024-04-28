@@ -208,10 +208,7 @@ txt_avg_trade_signal_indicator.markdown(f"# **:red[{most_voted_trade_signal}]**"
 
 
 full_coin_data_correlation = get_coin_data().corr()
-correlated_coins_df = (full_coin_data_correlation[selected_coin_for_forecast]
-                        .where(lambda x: x > COIN_SUGGESTION_THRESHOULD)
-                        .dropna()
-                        .sort_values(ascending=False))
+correlated_coins_df = full_coin_data_correlation[selected_coin_for_forecast].sort_values(ascending=False)
 positive_correlated_coins = correlated_coins_df.iloc[1:MAX_SUGGESTED_COINS].index.to_list()
 least_correlated_coins = correlated_coins_df.iloc[-MAX_SUGGESTED_COINS:].index.to_list()
 
