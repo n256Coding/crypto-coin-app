@@ -1,6 +1,6 @@
 from config import (ARIMA_CACHE, BASE_CURRENCY, COIN_SUGGESTION_THRESHOULD, LSTM_CACHE, MAX_SUGGESTED_COINS, NEURALPROPHET_CACHE, ONE_MONTH, 
                        ONE_WEEK, PROPHET_CACHE, SELECTED_COINS, THREE_MONTHS)
-from constant import MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, MODEL_RETRAIN_WILL_TAKE_TIME, MODEL_TRAINING_IN_PROGRESS, UPDATE_MODEL
+from constant import MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, MODEL_RETRAIN_WILL_TAKE_TIME, MODEL_TRAINING_IN_PROGRESS, SAME, UPDATE_MODEL
 from services.data_loader_service import get_main_dataset, reload_dataset_and_train_model
 from util.forecast_helper import (update_profit_loss_placeholder)
 from services import arima_service, lstm_service, neuralprophet_service, prophet_service
@@ -203,8 +203,12 @@ with st.container(border=False):
 
 most_voted_trade_signal = get_most_voted_trade_signal(trade_signals)
 
-txt_avg_trade_signal.markdown(f"Based on most votes, it is recommended to **{most_voted_trade_signal}** your {selected_coin_for_forecast} based on future {forecast_period} forecast.")
-txt_avg_trade_signal_indicator.markdown(f"# **:red[{most_voted_trade_signal}]**")
+if most_voted_trade_signal == SAME:
+    txt_avg_trade_signal.empty()
+    txt_avg_trade_signal_indicator.empty()
+else:
+    txt_avg_trade_signal.markdown(f"Based on most votes, it is recommended to **{most_voted_trade_signal}** your {selected_coin_for_forecast} based on future {forecast_period} forecast.")
+    txt_avg_trade_signal_indicator.markdown(f"# **:red[{most_voted_trade_signal}]**")
 
 
 full_coin_data_correlation = get_main_dataset().corr()

@@ -57,37 +57,32 @@ with row1_col2:
     with st.spinner("Computing in progress ..."):
         result = seasonal_decompose(coin_data_df[[selected_coin_for_seasonality]], model='additive', period=30)  # Adjust the period according to your dataset's seasonality
 
-    # Plot the original, trend, seasonal, and residual components using plt.subplots()
-    fig, axs = plt.subplots(4, 1, figsize=(12, 8), sharex=True)
+        # Plot the original, trend, seasonal, and residual components using plt.subplots()
+        fig, axs = plt.subplots(4, 1, figsize=(12, 8), sharex=True)
 
-    # Original time series
-    axs[0].plot(coin_data_df[[selected_coin_for_seasonality]], label='Original')
-    axs[0].legend()
+        # Original time series
+        axs[0].plot(coin_data_df[[selected_coin_for_seasonality]], label='Original')
+        axs[0].legend()
 
-    # Trend component
-    axs[1].plot(result.trend, label='Trend')
-    axs[1].legend()
+        # Trend component
+        axs[1].plot(result.trend, label='Trend')
+        axs[1].legend()
 
-    # Seasonal component
-    axs[2].plot(result.seasonal, label='Seasonal')
-    axs[2].legend()
+        # Seasonal component
+        axs[2].plot(result.seasonal, label='Seasonal')
+        axs[2].legend()
 
-    # Residual component
-    axs[3].plot(result.resid, label='Residual')
-    axs[3].legend()
+        # Residual component
+        axs[3].plot(result.resid, label='Residual')
+        axs[3].legend()
 
-    for ax in axs:
-        ax.xaxis.set_major_locator(MonthLocator())
-        ax.tick_params(axis='x', rotation=45)
+        for ax in axs:
+            ax.xaxis.set_major_locator(MonthLocator())
+            ax.tick_params(axis='x', rotation=45)
 
-    plt.tight_layout()
+        plt.tight_layout()
 
-    st.pyplot(fig)
-
-x_data = SELECTED_COINS
-y_data = [coin_data_df[coin] for coin in x_data]
-colors = ['rgba(93, 164, 214, 0.5)', 'rgba(255, 144, 14, 0.5)', 'rgba(44, 160, 101, 0.5)',
-          'rgba(255, 65, 54, 0.5)']
+        st.pyplot(fig)
 
 
 st.write("## Univariate Analysis")
@@ -98,6 +93,10 @@ with tab1:
 
     st.write("#### Box Plots")
     col1, col2, col3, col4 = st.columns(4)
+
+    x_data = SELECTED_COINS
+    y_data = [coin_data_df[coin] for coin in x_data]
+    colors = ['rgba(93, 164, 214, 0.5)', 'rgba(255, 144, 14, 0.5)', 'rgba(44, 160, 101, 0.5)', 'rgba(255, 65, 54, 0.5)']
 
     def draw_box_plot(index: int, x_data, y_data, color):
         fig = go.Figure()

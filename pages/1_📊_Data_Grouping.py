@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
-import altair as alt
-from urllib.error import URLError
 
+from config import SELECTED_COINS
 from services.data_grouping_service import perform_clusterization
 
-st.set_page_config(page_title="Data Grouping", page_icon="📊")
+st.set_page_config(page_title="Data Grouping", page_icon="📊", layout="wide")
 
 st.markdown("# Data Grouping")
 st.write(
@@ -28,4 +27,14 @@ def get_dataset():
 clustered_df, grouped_clusters = get_dataset()
 
 st.write("### Cluster Distribution", clustered_df)
-st.write("### Cluster Allocation", grouped_clusters)
+
+
+col_left, col_right = st.columns(2)
+
+with col_left:
+    st.write("### Cluster Allocation", grouped_clusters)
+
+with col_right:
+    st.markdown("### Selcted Cryptocurrencies")
+    st.write("These cryptocurrencies has been selected out of the clusters.")
+    st.write(SELECTED_COINS)
