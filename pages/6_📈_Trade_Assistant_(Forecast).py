@@ -1,11 +1,11 @@
 from config import (ARIMA_CACHE, BASE_CURRENCY, LSTM_CACHE, MAX_SUGGESTED_COINS, NEURALPROPHET_CACHE, ONE_MONTH, 
-                       ONE_WEEK, PROPHET_CACHE, SELECTED_COINS, THREE_MONTHS, TWO_WEEKS)
-from constant import (MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, MODEL_RETRAIN_WILL_TAKE_TIME, 
+                       ONE_WEEK, PROPHET_CACHE, RANDOMFOREST_CACHE, SELECTED_COINS, THREE_MONTHS, TWO_WEEKS)
+from constant import (MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, MODEL_RANDOMFOREST, MODEL_RETRAIN_WILL_TAKE_TIME, 
                       MODEL_TRAINING_IN_PROGRESS, SAME, UPDATE_MODEL)
 from services.data_loader_service import get_main_dataset, reload_dataset_and_train_model
 from util.common_util import get_currency_name
 from util.forecast_helper import update_profit_loss_placeholder
-from services import arima_service, lstm_service, neuralprophet_service, prophet_service
+from services import arima_service, lstm_service, neuralprophet_service, prophet_service, randomforest_service
 import streamlit as st
 import plotly.express as px
 
@@ -44,7 +44,7 @@ with col2:
 with st.container(border=True):
     # Trade Signal Panel
     st.subheader(f'Trade Signal _:gray[- {selected_coin_for_forecast} in {forecast_period}]_', divider='rainbow')
-    col_trade_signal_1, col_trade_signal_2, col_trade_signal_3, col_trade_signal_4 = st.columns(4)
+    col_trade_signal_1, col_trade_signal_2, col_trade_signal_3, col_trade_signal_4, col_trade_signal_5 = st.columns(5)
     with col_trade_signal_1:
         txt_arima_trade_signal = st.empty()
         txt_arima_trade_signal.markdown(f"###### {MODEL_ARIMA}: :blue[Loading ...]")
@@ -54,10 +54,14 @@ with st.container(border=True):
         txt_prophet_trade_signal.markdown(f"###### {MODEL_PROPHET}: :blue[Loading ...]")
 
     with col_trade_signal_3:
+        txt_randomforest_trade_signal = st.empty()
+        txt_randomforest_trade_signal.markdown(f"###### {MODEL_RANDOMFOREST}: :blue[Loading ...]")
+
+    with col_trade_signal_4:
         txt_neuralprophet_trade_signal = st.empty()
         txt_neuralprophet_trade_signal.markdown(f"###### {MODEL_NEURALPROPHET}: :blue[Loading ...]")
 
-    with col_trade_signal_4:
+    with col_trade_signal_5:
         txt_lstm_trade_signal = st.empty()
         txt_lstm_trade_signal.markdown(f"###### {MODEL_LSTM}: :blue[Loading ...]")
 
@@ -92,7 +96,7 @@ with st.container(border=True):
 
     st.write(f'''If you invest {amount_to_invest} {BASE_CURRENCY} today on 
              {get_currency_name(selected_coin_for_forecast)}, at the end of {forecast_period.lower()},''')
-    col_invest_calc_1, col_invest_calc_2, col_invest_calc_3, col_invest_calc_4 = st.columns(4)
+    col_invest_calc_1, col_invest_calc_2, col_invest_calc_3, col_invest_calc_4, col_invest_calc_5 = st.columns(5)
     with col_invest_calc_1:
         txt_arima_invest_calc = st.empty()
         txt_arima_invest_calc.markdown(f"###### {MODEL_ARIMA}: :blue[Calculating ...]")
@@ -102,10 +106,14 @@ with st.container(border=True):
         txt_prophet_invest_calc.markdown(f"###### {MODEL_PROPHET}: :blue[Calculating ...]")
 
     with col_invest_calc_3:
+        txt_randomforest_invest_calc = st.empty()
+        txt_randomforest_invest_calc.markdown(f"###### {MODEL_RANDOMFOREST}: :blue[Calculating ...]")
+
+    with col_invest_calc_4:
         txt_neuralprophet_invest_calc = st.empty()
         txt_neuralprophet_invest_calc.markdown(f"###### {MODEL_NEURALPROPHET}: :blue[Calculating ...]")
 
-    with col_invest_calc_4:
+    with col_invest_calc_5:
         txt_lstm_invest_calc = st.empty()
         txt_lstm_invest_calc.markdown(f"###### {MODEL_LSTM}: :blue[Calculating ...]")
 
@@ -113,7 +121,7 @@ with st.container(border=True):
 # Tabbed Panel
 st.subheader('Detailed View', divider='rainbow')
 with st.container(border=False):
-    tab_arima, tab_prophet, tab_neural_prophet, tab_lstm = st.tabs([MODEL_ARIMA, MODEL_PROPHET, MODEL_NEURALPROPHET, MODEL_LSTM])
+    tab_arima, tab_prophet, tab_randomforest, tab_neural_prophet, tab_lstm = st.tabs([MODEL_ARIMA, MODEL_PROPHET, MODEL_RANDOMFOREST, MODEL_NEURALPROPHET, MODEL_LSTM])
 
     with tab_arima:
         arima_updated_time_placeholder = st.empty()
@@ -145,8 +153,8 @@ with st.container(border=False):
         with st.spinner(MODEL_TRAINING_IN_PROGRESS):
             forecasted_prophet_dataset = prophet_service.train_full_model(coin_data_df, selected_coin_for_forecast, forecast_period)
 
-        plotted_prophet_df = prepare_forecast_dataset(coin_data_df, selected_coin_for_forecast, 
-                                                    prophet_updated_time_placeholder, forecasted_prophet_dataset, PROPHET_CACHE)
+        plotted_prophet_df = prepare_forecast_dataset(coin_data_df, selected_coin_for_forecast, prophet_updated_time_placeholder, 
+                                                      forecasted_prophet_dataset, PROPHET_CACHE)
         prophet_trade_signal = get_trade_signal(coin_data_df, selected_coin_for_forecast, forecasted_prophet_dataset)
         update_trade_signal_placeholder(txt_prophet_trade_signal, prophet_trade_signal, MODEL_PROPHET)
         trade_signals.append(prophet_trade_signal)
@@ -155,6 +163,27 @@ with st.container(border=False):
         update_profit_loss_placeholder(txt_prophet_invest_calc, MODEL_PROPHET, *prophet_expected_return)
 
         fig = px.line(plotted_prophet_df, labels={'index': 'Timestamp'})
+        st.plotly_chart(fig, use_container_width=True)
+
+    with tab_randomforest:
+        randomforest_updated_time_placeholder = st.empty()
+
+        if st.button(UPDATE_MODEL, help=MODEL_RETRAIN_WILL_TAKE_TIME, key="btn_update_randomforest_forecast_model"):
+            coin_data_df = reload_dataset_and_train_model(selected_coin_for_forecast, RANDOMFOREST_CACHE)
+
+        with st.spinner(MODEL_TRAINING_IN_PROGRESS):
+            forecasted_randomforest_dataset = randomforest_service.train_full_model(coin_data_df, selected_coin_for_forecast, forecast_period)
+
+        plotted_randomforest_df = prepare_forecast_dataset(coin_data_df, selected_coin_for_forecast, randomforest_updated_time_placeholder, 
+                                                           forecasted_randomforest_dataset, RANDOMFOREST_CACHE)
+        randomforest_trade_signal = get_trade_signal(coin_data_df, selected_coin_for_forecast, forecasted_randomforest_dataset)
+        update_trade_signal_placeholder(txt_randomforest_trade_signal, randomforest_trade_signal, MODEL_RANDOMFOREST)
+        trade_signals.append(randomforest_trade_signal)
+
+        randomforest_expected_return = calculate_expected_return(coin_data_df, selected_coin_for_forecast, forecasted_randomforest_dataset, amount_to_invest)
+        update_profit_loss_placeholder(txt_randomforest_invest_calc, MODEL_RANDOMFOREST, *randomforest_expected_return)
+
+        fig = px.line(plotted_randomforest_df, labels={'index': 'Timestamp'})
         st.plotly_chart(fig, use_container_width=True)
 
     with tab_neural_prophet:

@@ -50,12 +50,9 @@ def update_trade_signal_placeholder(placeholder, trade_signal: str, model_name: 
 
 def get_most_voted_trade_signal(trade_signal_list: list) -> str:
     trade_signal_count = Counter(trade_signal_list)
-    top_two = trade_signal_count.most_common(2)
-
-    if len(top_two) == 2 and top_two[0][1] == top_two[1][1]:
-        return SAME
+    top_most = trade_signal_count.most_common(1)
     
-    return top_two[0][0]
+    return top_most[0][0]
 
 
 def update_profit_loss_placeholder(placeholder, model_name: str, *args):

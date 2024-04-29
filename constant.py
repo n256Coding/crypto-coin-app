@@ -15,6 +15,7 @@ MODEL_ARIMA = 'ARIMA'
 MODEL_PROPHET = 'Prophet'
 MODEL_NEURALPROPHET = 'Neural Prophet'
 MODEL_LSTM = 'LSTM'
+MODEL_RANDOMFOREST = 'Random Forest'
 
 # Trade Profit Indicators
 PROFIT = 'Profit'

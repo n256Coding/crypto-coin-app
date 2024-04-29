@@ -28,11 +28,13 @@ ARIMA_EVAL_CACHE = "arima_eval_cache"
 PROPHET_EVAL_CACHE = "prophet_eval_cache"
 NEURALPROPHET_EVAL_CACHE = "neuralprophet_eval_cache"
 LSTM_EVAL_CACHE = "lstm_eval_cache"
+RANDOMFOREST_EVAL_CACHE = "randomforest_eval_cache"
 
 ARIMA_CACHE = "arima_cache"
 PROPHET_CACHE = "prophet_cache"
 NEURALPROPHET_CACHE = "neuralprophet_cache"
 LSTM_CACHE = "lstm_cache"
+RANDOMFOREST_CACHE = "randomforest_cache"
 
 EVALUATIONS = {}
 
