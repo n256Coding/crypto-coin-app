@@ -1,6 +1,6 @@
 from collections import Counter
 import streamlit as st
-from config import BASE_CURRENCY, CURRENT_DATA_SHOWN_DAYS
+from config import BASE_CURRENCY, CURRENT_DATA_SHOWN_DAYS, ONE_MONTH, ONE_WEEK, THREE_MONTHS, TWO_WEEKS
 from constant import BUY, LOSS, MODEL_UPDATED_TIME, SAME, SELL, TRAINED_MODELS_ARE_CACHED
 from util.file_handler import get_model_time
 
@@ -65,3 +65,19 @@ def update_profit_loss_placeholder(placeholder, model_name: str, *args):
         st.markdown(f'###### {model_name}')
         st.markdown(f'''Forecasted return: **{expected_return} {BASE_CURRENCY}**  
                     {indicator}: **:{"red" if indicator == LOSS else "green"}[{income_loss} {BASE_CURRENCY}]**''')
+
+
+def translate_forecast_period(forecast_period_enum: str):
+    if forecast_period_enum == ONE_WEEK:
+        period = 7
+
+    elif forecast_period_enum == TWO_WEEKS:
+        period = 14
+
+    elif forecast_period_enum == ONE_MONTH:
+        period = 30
+
+    elif forecast_period_enum == THREE_MONTHS:
+        period = 90
+
+    return period

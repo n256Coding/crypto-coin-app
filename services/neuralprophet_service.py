@@ -6,9 +6,10 @@ import streamlit as st
 import pandas as pd
 from neuralprophet import NeuralProphet
 
-from config import NEURALPROPHET_CACHE, NEURALPROPHET_EVAL_CACHE, ONE_MONTH, ONE_WEEK, THREE_MONTHS
+from config import NEURALPROPHET_CACHE, NEURALPROPHET_EVAL_CACHE
 from constant import MODEL_NEURALPROPHET
 from util.file_handler import get_temp_file_path, is_file_exits
+from util.forecast_helper import translate_forecast_period
 
 def train_full_model(dataset, selected_coin, forecast_period: str) -> tuple[pd.DataFrame, pd.DataFrame]:
 
@@ -34,14 +35,7 @@ def train_full_model(dataset, selected_coin, forecast_period: str) -> tuple[pd.D
 
         st.toast(f"{MODEL_NEURALPROPHET} model loaded from cache", icon='ℹ️')
     
-    if forecast_period == ONE_WEEK:
-        period = 7
-
-    elif forecast_period == ONE_MONTH:
-        period = 30
-
-    elif forecast_period == THREE_MONTHS:
-        period = 90
+    period = translate_forecast_period(forecast_period)
 
     future = m.make_future_dataframe(temp_dataset_df, periods=period)
     

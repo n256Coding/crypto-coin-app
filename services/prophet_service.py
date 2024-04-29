@@ -5,10 +5,12 @@ import pandas as pd
 from pandas import DataFrame
 import numpy as np
 
-from config import ONE_MONTH, ONE_WEEK, PROPHET_CACHE, PROPHET_EVAL_CACHE, THREE_MONTHS
+from config import PROPHET_CACHE, PROPHET_EVAL_CACHE
 from constant import MODEL_PROPHET
 from util.file_handler import get_temp_file_path, is_file_exits
 from sklearn.metrics import mean_squared_error, mean_absolute_error
+
+from util.forecast_helper import translate_forecast_period
 
 def build_model(dataframe: pd.DataFrame):
     """Initialize and fit the prophet model"""
@@ -37,15 +39,7 @@ def train_full_model(dataset: DataFrame, selected_coin: str, forecast_period: st
 
         st.toast(f'{MODEL_PROPHET} model loaded from cache', icon='ℹ️')
 
-
-    if forecast_period == ONE_WEEK:
-        period = 7
-
-    elif forecast_period == ONE_MONTH:
-        period = 30
-
-    elif forecast_period == THREE_MONTHS:
-        period = 90
+    period = translate_forecast_period(forecast_period)
 
     df_future = model.make_future_dataframe(periods=period, include_history=False)
 

@@ -39,6 +39,7 @@ EVALUATIONS = {}
 
 # Forecast Periods
 ONE_WEEK = '7 Days'
+TWO_WEEKS = '2 Weeks'
 ONE_MONTH = '30 Days'
 THREE_MONTHS = '3 Months'
 

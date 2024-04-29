@@ -1,19 +1,19 @@
 import pickle
-import math
 from keras.models import Sequential
 from keras.layers import LSTM, Dense, Dropout
 from keras.callbacks import EarlyStopping
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler, Normalizer
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import streamlit as st
 from keras.saving import load_model
 from sklearn.preprocessing import MinMaxScaler
 
-from config import LSTM_CACHE, LSTM_EVAL_CACHE, ONE_MONTH, ONE_WEEK, THREE_MONTHS
+from config import LSTM_CACHE, LSTM_EVAL_CACHE
 from constant import MODEL_LSTM
 from util.file_handler import get_temp_file_path, is_file_exits
+from util.forecast_helper import translate_forecast_period
 
 sequence_length = 10
 
@@ -104,14 +104,7 @@ def train_full_model(dataset: pd.DataFrame, selected_coin: str, forecast_period:
     start_sequence = scaled_dataset[-sequence_length:]
     start_sequence = start_sequence[np.newaxis, :]
 
-    if forecast_period == ONE_WEEK:
-        period = 7
-
-    elif forecast_period == ONE_MONTH:
-        period = 30
-
-    elif forecast_period == THREE_MONTHS:
-        period = 90
+    period = translate_forecast_period(forecast_period)
 
     for i in range(period):
         prediction = model.predict(start_sequence)

@@ -1,6 +1,5 @@
 # Import the library
 from pmdarima import auto_arima
-from pmdarima import ARIMA
 import pmdarima as pm
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 import pandas as pd
@@ -14,9 +13,10 @@ from datetime import datetime, timedelta
 # Ignore harmless warnings
 import warnings
 
-from config import ARIMA_CACHE, ARIMA_EVAL_CACHE, ONE_MONTH, ONE_WEEK, THREE_MONTHS
+from config import ARIMA_CACHE, ARIMA_EVAL_CACHE
 from constant import MODEL_ARIMA
 from util.file_handler import get_temp_file_path, is_file_exits
+from util.forecast_helper import translate_forecast_period
 warnings.filterwarnings("ignore")
 
 
@@ -77,15 +77,8 @@ def train_full_model(dataset: DataFrame, selected_coin: str, forecast_period: st
         
         st.toast(f'{MODEL_ARIMA} model loaded from cache', icon='ℹ️')
 
-    if forecast_period == ONE_WEEK:
-        period = 7
+    period = translate_forecast_period(forecast_period)
 
-    elif forecast_period == ONE_MONTH:
-        period = 30
-
-    elif forecast_period == THREE_MONTHS:
-        period = 90
-    
     predictions, _ = result.predict(n_periods=period, return_conf_int=True)
 
     forecast_dataframe = pd.DataFrame({

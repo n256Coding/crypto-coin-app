@@ -1,5 +1,5 @@
 from config import (ARIMA_CACHE, BASE_CURRENCY, LSTM_CACHE, MAX_SUGGESTED_COINS, NEURALPROPHET_CACHE, ONE_MONTH, 
-                       ONE_WEEK, PROPHET_CACHE, SELECTED_COINS, THREE_MONTHS)
+                       ONE_WEEK, PROPHET_CACHE, SELECTED_COINS, THREE_MONTHS, TWO_WEEKS)
 from constant import (MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, MODEL_RETRAIN_WILL_TAKE_TIME, 
                       MODEL_TRAINING_IN_PROGRESS, SAME, UPDATE_MODEL)
 from services.data_loader_service import get_main_dataset, reload_dataset_and_train_model
@@ -38,7 +38,7 @@ with col1:
     selected_coin_for_forecast = st.selectbox('Select the coin which you want to get the assistance with', SELECTED_COINS, key="forecast_coin_select")
 
 with col2:
-    forecast_period = st.selectbox('Targetted trading period', (ONE_WEEK, ONE_MONTH, THREE_MONTHS))
+    forecast_period = st.selectbox('Targetted trading period', (ONE_WEEK, TWO_WEEKS, ONE_MONTH, THREE_MONTHS))
 
 
 with st.container(border=True):
