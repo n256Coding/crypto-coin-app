@@ -1,14 +1,17 @@
-from config import (ARIMA_CACHE, BASE_CURRENCY, COIN_SUGGESTION_THRESHOULD, LSTM_CACHE, MAX_SUGGESTED_COINS, NEURALPROPHET_CACHE, ONE_MONTH, 
+from config import (ARIMA_CACHE, BASE_CURRENCY, LSTM_CACHE, MAX_SUGGESTED_COINS, NEURALPROPHET_CACHE, ONE_MONTH, 
                        ONE_WEEK, PROPHET_CACHE, SELECTED_COINS, THREE_MONTHS)
-from constant import MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, MODEL_RETRAIN_WILL_TAKE_TIME, MODEL_TRAINING_IN_PROGRESS, SAME, UPDATE_MODEL
+from constant import (MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, MODEL_RETRAIN_WILL_TAKE_TIME, 
+                      MODEL_TRAINING_IN_PROGRESS, SAME, UPDATE_MODEL)
 from services.data_loader_service import get_main_dataset, reload_dataset_and_train_model
+from util.common_util import get_currency_name
 from util.forecast_helper import (update_profit_loss_placeholder)
 from services import arima_service, lstm_service, neuralprophet_service, prophet_service
 import streamlit as st
 import plotly.express as px
 
 from util.finance_manager import calculate_expected_return
-from util.forecast_helper import get_most_voted_trade_signal, get_trade_signal, prepare_forecast_dataset, update_trade_signal_placeholder
+from util.forecast_helper import (get_most_voted_trade_signal, get_trade_signal, prepare_forecast_dataset, 
+                                  update_trade_signal_placeholder)
 from util.rss_feed_handler import load_financial_rss_feeds_dict
 
 st.set_page_config(page_title="Trade Assistant - Forcast", page_icon="📈", layout="wide")
@@ -87,7 +90,8 @@ with st.container(border=True):
     with col_invest_calc_input_1:
         amount_to_invest = st.number_input(f'Enter desired invesment in {BASE_CURRENCY}', min_value=1)
 
-    st.write(f'If you invest {amount_to_invest} {BASE_CURRENCY} today on {selected_coin_for_forecast.split("-")[0]}, at the end of {forecast_period.lower()},')
+    st.write(f'''If you invest {amount_to_invest} {BASE_CURRENCY} today on 
+             {get_currency_name(selected_coin_for_forecast)}, at the end of {forecast_period.lower()},''')
     col_invest_calc_1, col_invest_calc_2, col_invest_calc_3, col_invest_calc_4 = st.columns(4)
     with col_invest_calc_1:
         txt_arima_invest_calc = st.empty()

@@ -26,15 +26,21 @@ def get_dataset():
 
 clustered_df, grouped_clusters = get_dataset()
 
-st.write("### Cluster Distribution", clustered_df)
+st.write("### Cluster Distribution")
+st.markdown("""This is how the final dataset looks like after applying dimentionality 
+            reduction and clustering. Column "Cluster" shows the cluster which the corresponding data point is allocated. 
+            "PC1 - PC10" are the principal components which are identified during the dimentionality reduction step.""")
+st.table(clustered_df)
 
 
 col_left, col_right = st.columns(2)
 
 with col_left:
-    st.write("### Cluster Allocation", grouped_clusters)
+    st.write("### Cluster Allocation")
+    grouped_clusters["Selected Currency"] = SELECTED_COINS
+    st.table(grouped_clusters)
 
-with col_right:
-    st.markdown("### Selcted Cryptocurrencies")
-    st.write("These cryptocurrencies has been selected out of the clusters.")
-    st.write(SELECTED_COINS)
+# with col_right:
+#     st.markdown("### Selcted Cryptocurrencies")
+#     st.write("These cryptocurrencies has been selected out of the clusters.")
+#     st.write(SELECTED_COINS)
