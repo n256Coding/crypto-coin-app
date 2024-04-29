@@ -1,5 +1,5 @@
 from config import SELECTED_COINS
-from services.main_service import (get_coin_data)
+from services.data_loader_service import (get_main_dataset)
 
 import streamlit as st
 import plotly.express as px
@@ -9,7 +9,7 @@ st.set_page_config(page_title="Moving Average", page_icon="📈", layout="wide")
 
 st.markdown("# Moving Average")
 
-coin_data_df = get_coin_data(SELECTED_COINS)
+coin_data_df = get_main_dataset(SELECTED_COINS)
 
 # Input Panel
 col1, col2 = st.columns(2)

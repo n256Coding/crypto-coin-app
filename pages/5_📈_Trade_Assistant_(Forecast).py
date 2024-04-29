@@ -1,21 +1,21 @@
 from config import (ARIMA_CACHE, BASE_CURRENCY, COIN_SUGGESTION_THRESHOULD, LSTM_CACHE, MAX_SUGGESTED_COINS, NEURALPROPHET_CACHE, ONE_MONTH, 
                        ONE_WEEK, PROPHET_CACHE, SELECTED_COINS, THREE_MONTHS)
 from constant import MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, MODEL_RETRAIN_WILL_TAKE_TIME, MODEL_TRAINING_IN_PROGRESS, UPDATE_MODEL
-from services.main_service import (get_coin_data, get_most_voted_trade_signal, get_trade_signal, 
-                                   prepare_forecast_dataset, reload_dataset_and_train_model, update_profit_loss_placeholder, 
-                                   update_trade_signal_placeholder)
-from services import lstm_service, neuralprophet_service, prophet_service, arima_forecasting
+from services.data_loader_service import get_main_dataset, reload_dataset_and_train_model
+from util.forecast_helper import (update_profit_loss_placeholder)
+from services import arima_service, lstm_service, neuralprophet_service, prophet_service
 import streamlit as st
 import plotly.express as px
 
 from util.finance_manager import calculate_expected_return
+from util.forecast_helper import get_most_voted_trade_signal, get_trade_signal, prepare_forecast_dataset, update_trade_signal_placeholder
 from util.rss_feed_handler import load_financial_rss_feeds_dict
 
 st.set_page_config(page_title="Trade Assistant - Forcast", page_icon="📈", layout="wide")
 
 st.markdown("# Trade Assistant - Forcast")
 
-coin_data_df = get_coin_data(SELECTED_COINS)
+coin_data_df = get_main_dataset(SELECTED_COINS)
 trade_signals = []
 
 with st.sidebar:
@@ -118,7 +118,7 @@ with st.container(border=False):
             coin_data_df = reload_dataset_and_train_model(selected_coin_for_forecast, ARIMA_CACHE)
 
         with st.spinner(MODEL_TRAINING_IN_PROGRESS):
-            forecasted_arima_dataset = arima_forecasting.train_full_model(coin_data_df, selected_coin_for_forecast, forecast_period)
+            forecasted_arima_dataset = arima_service.train_full_model(coin_data_df, selected_coin_for_forecast, forecast_period)
 
         plotted_arima_df = prepare_forecast_dataset(coin_data_df, selected_coin_for_forecast, 
                                                     arima_updated_time_placeholder, forecasted_arima_dataset, ARIMA_CACHE)
@@ -207,7 +207,7 @@ txt_avg_trade_signal.markdown(f"Based on most votes, it is recommended to **{mos
 txt_avg_trade_signal_indicator.markdown(f"# **:red[{most_voted_trade_signal}]**")
 
 
-full_coin_data_correlation = get_coin_data().corr()
+full_coin_data_correlation = get_main_dataset().corr()
 correlated_coins_df = full_coin_data_correlation[selected_coin_for_forecast].sort_values(ascending=False)
 positive_correlated_coins = correlated_coins_df.iloc[1:MAX_SUGGESTED_COINS].index.to_list()
 least_correlated_coins = correlated_coins_df.iloc[-MAX_SUGGESTED_COINS:].index.to_list()

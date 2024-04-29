@@ -3,7 +3,7 @@ import pandas as pd
 import altair as alt
 from urllib.error import URLError
 
-from services.main_service import perform_clusterization
+from services.data_grouping_service import perform_clusterization
 
 st.set_page_config(page_title="Data Grouping", page_icon="📊")
 

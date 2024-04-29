@@ -9,7 +9,8 @@ from matplotlib.dates import WeekdayLocator, MonthLocator
 from config import CLUSTER_COLUMN_NAME, INTERESTED_DATA_FIELD, SELECTED_COINS
 from pandas.plotting import lag_plot
 
-from services.main_service import get_coin_data, perform_clusterization
+from services.data_loader_service import get_main_dataset
+from services.data_grouping_service import perform_clusterization
 
 st.set_page_config(page_title="EDA", page_icon="📈", layout="wide")
 
@@ -19,7 +20,7 @@ st.write(
     """This section performs various explanatory data analysis (EDA) on the dataset."""
 )
 
-coin_data_df = get_coin_data(SELECTED_COINS)
+coin_data_df = get_main_dataset(SELECTED_COINS)
 
 coins = st.multiselect(
     "Choose coins", SELECTED_COINS, SELECTED_COINS
@@ -162,7 +163,7 @@ with tab3:
         )
 
     with col_correlation_right:
-        corr_coin_data = get_coin_data(group1_selected_coins + group2_selected_coins + group3_selected_coins + group4_selected_coins)
+        corr_coin_data = get_main_dataset(group1_selected_coins + group2_selected_coins + group3_selected_coins + group4_selected_coins)
         correlation_matrix = corr_coin_data.corr()
 
         fig = px.imshow(correlation_matrix, text_auto=True, height=800, width=800)

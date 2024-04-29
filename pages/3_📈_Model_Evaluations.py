@@ -4,9 +4,10 @@ import plotly.express as px
 
 from config import ARIMA_EVAL_CACHE, EVALUATIONS, LSTM_EVAL_CACHE, NEURALPROPHET_EVAL_CACHE, PROPHET_EVAL_CACHE, SELECTED_COINS
 from constant import MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET
-from services import arima_forecasting, prophet_service, neuralprophet_service, lstm_service
+from services.data_loader_service import get_main_dataset
+from services import arima_service, prophet_service, neuralprophet_service, lstm_service
 from util.file_handler import get_temp_file_path, is_file_exits
-from services.main_service import get_coin_data, reload_dataset_and_train_model
+from services.data_loader_service import reload_dataset_and_train_model
 
 st.set_page_config(page_title="Model Evaluations", page_icon="📈")
 
@@ -25,7 +26,7 @@ overall_prediction_df = pd.DataFrame()
 tab_arima, tab_prophet, tab_neural_prophet, tab_lstm = st.tabs([MODEL_ARIMA, MODEL_PROPHET, MODEL_NEURALPROPHET, MODEL_LSTM])
 
 
-coin_data_df = get_coin_data(SELECTED_COINS)
+coin_data_df = get_main_dataset(SELECTED_COINS)
 
 with tab_arima:
 
@@ -36,7 +37,7 @@ with tab_arima:
             st.toast(f"{MODEL_ARIMA} model cache clear triggered!")
 
     with st.spinner(f'Fitting the {MODEL_ARIMA.lower()} model...'):
-        prediction_data, test_data = arima_forecasting.train_model(coin_data_df, selected_coin_for_evaluation)
+        prediction_data, test_data = arima_service.train_model(coin_data_df, selected_coin_for_evaluation)
 
     overall_prediction_df = test_data.copy(deep=True)
     overall_prediction_df[MODEL_ARIMA] = prediction_data["Prediction"]
@@ -47,7 +48,7 @@ with tab_arima:
 
 
     with st.spinner("Evaluating ..."):
-        rmse_score, mse_score, mae_score = arima_forecasting.get_evaluations(prediction_data, test_data)
+        rmse_score, mse_score, mae_score = arima_service.get_evaluations(prediction_data, test_data)
         evaluation_df = pd.DataFrame({
             "Score": [rmse_score, mse_score, mae_score],
         }, index=["RMSE", "MSE", "MAE"])
