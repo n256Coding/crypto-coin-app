@@ -4,7 +4,7 @@ from constant import (MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHE
                       MODEL_TRAINING_IN_PROGRESS, SAME, UPDATE_MODEL)
 from services.data_loader_service import get_main_dataset, reload_dataset_and_train_model
 from util.common_util import get_currency_name
-from util.forecast_helper import (update_profit_loss_placeholder)
+from util.forecast_helper import update_profit_loss_placeholder
 from services import arima_service, lstm_service, neuralprophet_service, prophet_service
 import streamlit as st
 import plotly.express as px

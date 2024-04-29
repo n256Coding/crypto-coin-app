@@ -1,12 +1,10 @@
 import streamlit as st
-import time
-import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from statsmodels.tsa.seasonal import seasonal_decompose
 import matplotlib.pyplot as plt
-from matplotlib.dates import WeekdayLocator, MonthLocator
-from config import CLUSTER_COLUMN_NAME, INTERESTED_DATA_FIELD, SELECTED_COINS
+from matplotlib.dates import MonthLocator
+from config import CLUSTER_COLUMN_NAME, SELECTED_COINS
 from pandas.plotting import lag_plot
 
 from services.data_loader_service import get_main_dataset
