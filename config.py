@@ -45,4 +45,4 @@ TWO_WEEKS = '2 Weeks'
 ONE_MONTH = '30 Days'
 THREE_MONTHS = '3 Months'
 
-
+RSS_FEED_SOURCE_URL = "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15839069"

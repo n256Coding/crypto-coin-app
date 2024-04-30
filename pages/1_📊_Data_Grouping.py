@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 
 from config import SELECTED_COINS
 from services.data_grouping_service import perform_clusterization
@@ -36,11 +37,16 @@ st.table(clustered_df)
 col_left, col_right = st.columns(2)
 
 with col_left:
+    st.markdown("# ")
     st.write("### Cluster Allocation")
     grouped_clusters["Selected Currency"] = SELECTED_COINS
     st.table(grouped_clusters)
 
-# with col_right:
-#     st.markdown("### Selcted Cryptocurrencies")
-#     st.write("These cryptocurrencies has been selected out of the clusters.")
-#     st.write(SELECTED_COINS)
+with col_right:
+    # st.markdown("### Selcted Cryptocurrencies")
+
+    fig = px.bar(grouped_clusters, x="Cluster Number", y="Number of Data Points Under Cluster")
+    st.plotly_chart(fig, use_container_width=True)
+
+    # st.write("These cryptocurrencies has been selected out of the clusters.")
+    # st.write(SELECTED_COINS)

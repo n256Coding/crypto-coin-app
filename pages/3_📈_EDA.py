@@ -27,7 +27,7 @@ with st.container(border=True):
         "Choose coins", SELECTED_COINS, SELECTED_COINS
     )
 
-    fig = px.line(coin_data_df[coins], labels={'index': 'Timestamp'})
+    fig = px.line(coin_data_df[coins], labels={'index': 'Timestamp', 'variable': 'Models'})
     st.plotly_chart(fig, use_container_width=True)
 
     # st.line_chart(data=coin_data_df[coins])
