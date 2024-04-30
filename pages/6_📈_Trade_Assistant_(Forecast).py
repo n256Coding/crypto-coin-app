@@ -141,7 +141,7 @@ with st.container(border=False):
         arima_expected_return = calculate_expected_return(coin_data_df, selected_coin_for_forecast, forecasted_arima_dataset, amount_to_invest)
         update_profit_loss_placeholder(txt_arima_invest_calc, MODEL_ARIMA, *arima_expected_return)
 
-        fig = px.line(plotted_arima_df, labels={'index': 'Timestamp'})
+        fig = px.line(plotted_arima_df, labels={'index': 'Timestamp', 'variable': f'{selected_coin_for_forecast} Trend'})
         st.plotly_chart(fig, use_container_width=True)
 
     with tab_prophet:
@@ -162,7 +162,7 @@ with st.container(border=False):
         prophet_expected_return = calculate_expected_return(coin_data_df, selected_coin_for_forecast, forecasted_prophet_dataset, amount_to_invest)
         update_profit_loss_placeholder(txt_prophet_invest_calc, MODEL_PROPHET, *prophet_expected_return)
 
-        fig = px.line(plotted_prophet_df, labels={'index': 'Timestamp'})
+        fig = px.line(plotted_prophet_df, labels={'index': 'Timestamp', 'variable': f'{selected_coin_for_forecast} Trend'})
         st.plotly_chart(fig, use_container_width=True)
 
     with tab_randomforest:
@@ -183,7 +183,7 @@ with st.container(border=False):
         randomforest_expected_return = calculate_expected_return(coin_data_df, selected_coin_for_forecast, forecasted_randomforest_dataset, amount_to_invest)
         update_profit_loss_placeholder(txt_randomforest_invest_calc, MODEL_RANDOMFOREST, *randomforest_expected_return)
 
-        fig = px.line(plotted_randomforest_df, labels={'index': 'Timestamp'})
+        fig = px.line(plotted_randomforest_df, labels={'index': 'Timestamp', 'variable': f'{selected_coin_for_forecast} Trend'})
         st.plotly_chart(fig, use_container_width=True)
 
     with tab_neural_prophet:
@@ -205,7 +205,7 @@ with st.container(border=False):
         neuralprophet_expected_return = calculate_expected_return(coin_data_df, selected_coin_for_forecast, forecasted_neuralprophet_dataset, amount_to_invest)
         update_profit_loss_placeholder(txt_neuralprophet_invest_calc, MODEL_NEURALPROPHET, *neuralprophet_expected_return)
 
-        fig = px.line(plotted_neuralprophet_df, labels={'index': 'Timestamp'})
+        fig = px.line(plotted_neuralprophet_df, labels={'index': 'Timestamp', 'variable': f'{selected_coin_for_forecast} Trend'})
         st.plotly_chart(fig, use_container_width=True)
 
     with tab_lstm:
@@ -231,7 +231,7 @@ with st.container(border=False):
         #     "Forecasted": forecasted_dataset["Prediction"]
         # }, index=pd.to_datetime(coin_data_df.index.union(forecasted_dataset.index)))
 
-        fig = px.line(plotted_lstm_df, labels={'index': 'Timestamp'})
+        fig = px.line(plotted_lstm_df, labels={'index': 'Timestamp', 'variable': f'{selected_coin_for_forecast} Trend'})
         st.plotly_chart(fig, use_container_width=True)
 
 most_voted_trade_signal = get_most_voted_trade_signal(trade_signals)

@@ -17,7 +17,7 @@ def prepare_forecast_dataset(coin_data_df: DataFrame, selected_coin_for_forecast
 
     temp_df = pd.DataFrame({
         "Current": coin_data_df[selected_coin_for_forecast].iloc[-CURRENT_DATA_SHOWN_DAYS:],
-    }, index=coin_data_df.index)
+    }, index=coin_data_df.iloc[-CURRENT_DATA_SHOWN_DAYS:].index)
 
     temp_df1 = pd.DataFrame({
         "Forecasted": forecasted_dataset["Prediction"],
