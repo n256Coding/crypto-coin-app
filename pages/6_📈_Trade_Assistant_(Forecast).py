@@ -240,7 +240,7 @@ if most_voted_trade_signal == SAME:
     txt_avg_trade_signal.empty()
     txt_avg_trade_signal_indicator.empty()
 else:
-    txt_avg_trade_signal.markdown(f"Based on most votes, it is recommended to **{most_voted_trade_signal}** your {selected_coin_for_forecast} based on future {forecast_period} forecast.")
+    txt_avg_trade_signal.markdown(f"Based on most votes, it is recommended to **{most_voted_trade_signal}** your {selected_coin_for_forecast} based on future {forecast_period.lower()} forecast.")
     txt_avg_trade_signal_indicator.markdown(f"# **:red[{most_voted_trade_signal}]**")
 
 
