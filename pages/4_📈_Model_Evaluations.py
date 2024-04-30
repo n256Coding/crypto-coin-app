@@ -2,17 +2,19 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 
-from config import ARIMA_EVAL_CACHE, EVALUATIONS, LSTM_EVAL_CACHE, NEURALPROPHET_EVAL_CACHE, PROPHET_EVAL_CACHE, RANDOMFOREST_EVAL_CACHE, SELECTED_COINS
-from constant import MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, MODEL_RANDOMFOREST, MODEL_RETRAIN_WILL_TAKE_TIME, UPDATE_MODEL
+from config import (ARIMA_EVAL_CACHE, EVALUATIONS, LSTM_EVAL_CACHE, NEURALPROPHET_EVAL_CACHE, 
+                    PROPHET_EVAL_CACHE, RANDOMFOREST_EVAL_CACHE, SELECTED_COINS)
+from constant import (MODEL_ARIMA, MODEL_LSTM, MODEL_NEURALPROPHET, MODEL_PROPHET, 
+                      MODEL_RANDOMFOREST, MODEL_RETRAIN_WILL_TAKE_TIME, MODEL_UPDATED_TIME, 
+                      TRAINED_MODELS_ARE_CACHED, UPDATE_MODEL)
 from services.data_loader_service import get_main_dataset
 from services import arima_service, prophet_service, neuralprophet_service, lstm_service, randomforest_service
-from util.file_handler import get_temp_file_path, is_file_exits
+from util.file_handler import get_model_time, get_temp_file_path, is_file_exits
 from services.data_loader_service import reload_dataset_and_train_model
 
 st.set_page_config(page_title="Model Evaluations", page_icon="📈", layout="wide")
 
 st.markdown("# Model Evaluations")
-st.sidebar.header("Model Evaluations")
 st.write(
     """This section trains and evaluate the models."""
 )
@@ -34,11 +36,16 @@ coin_data_df = get_main_dataset(SELECTED_COINS)
 
 with tab_arima:
 
+    arima_model_updated_time = st.empty()
+
     cached_model_name = get_temp_file_path(selected_coin_for_evaluation, ARIMA_EVAL_CACHE)
     if is_file_exits(cached_model_name):
         if st.button(UPDATE_MODEL, key="arima_cache_clear", help=MODEL_RETRAIN_WILL_TAKE_TIME):
             reload_dataset_and_train_model(selected_coin_for_evaluation, ARIMA_EVAL_CACHE)
             st.toast(f"{MODEL_ARIMA} model cache clear triggered!")
+
+    model_date = get_model_time(selected_coin_for_evaluation, ARIMA_EVAL_CACHE)
+    arima_model_updated_time.text(MODEL_UPDATED_TIME.format(model_date), help=TRAINED_MODELS_ARE_CACHED)
 
     with st.spinner(f'Fitting the {MODEL_ARIMA.lower()} model...'):
         prediction_data, test_data = arima_service.train_model(coin_data_df, selected_coin_for_evaluation)
@@ -62,11 +69,16 @@ with tab_arima:
 
 with tab_prophet:
 
+    prophet_model_updated_time = st.empty()
+
     cached_model_name = get_temp_file_path(selected_coin_for_evaluation, PROPHET_EVAL_CACHE)
     if is_file_exits(cached_model_name):
         if st.button(UPDATE_MODEL, key="prophet_cache_clear", help=MODEL_RETRAIN_WILL_TAKE_TIME):
             reload_dataset_and_train_model(selected_coin_for_evaluation, PROPHET_EVAL_CACHE)
             st.toast(f"{MODEL_PROPHET} cache clear triggered!")
+
+    model_date = get_model_time(selected_coin_for_evaluation, PROPHET_EVAL_CACHE)
+    prophet_model_updated_time.text(MODEL_UPDATED_TIME.format(model_date), help=TRAINED_MODELS_ARE_CACHED)
     
     with st.spinner(f"{MODEL_PROPHET.lower()} model is training in progress ..."):
         prediction_data, test_data, full_prediction = prophet_service.train_model(coin_data_df, selected_coin_for_evaluation)
@@ -88,11 +100,16 @@ with tab_prophet:
 
 with tab_random_forest:
 
+    randomforest_model_updated_time = st.empty()
+
     cached_model_name = get_temp_file_path(selected_coin_for_evaluation, RANDOMFOREST_EVAL_CACHE)
     if is_file_exits(cached_model_name):
         if st.button(UPDATE_MODEL, key="randomforest_cache_clear", help=MODEL_RETRAIN_WILL_TAKE_TIME):
             reload_dataset_and_train_model(selected_coin_for_evaluation, RANDOMFOREST_EVAL_CACHE)
             st.toast(f"{MODEL_RANDOMFOREST} cache clear triggered!")
+    
+    model_date = get_model_time(selected_coin_for_evaluation, RANDOMFOREST_EVAL_CACHE)
+    randomforest_model_updated_time.text(MODEL_UPDATED_TIME.format(model_date), help=TRAINED_MODELS_ARE_CACHED)
     
     with st.spinner(f"{MODEL_RANDOMFOREST.lower()} model is training in progress ..."):
         prediction_data, test_data, full_prediction = randomforest_service.train_model(coin_data_df, selected_coin_for_evaluation)
@@ -114,11 +131,16 @@ with tab_random_forest:
 
 with tab_neural_prophet:
 
+    neuralprophet_model_updated_time = st.empty()
+
     cached_model_name = get_temp_file_path(selected_coin_for_evaluation, NEURALPROPHET_EVAL_CACHE)
     if is_file_exits(cached_model_name):
         if st.button(UPDATE_MODEL, key="neuralprophet_cache_clear", help=MODEL_RETRAIN_WILL_TAKE_TIME):
             reload_dataset_and_train_model(selected_coin_for_evaluation, NEURALPROPHET_EVAL_CACHE)
             st.toast(f"{MODEL_NEURALPROPHET} model cache clear triggered!")
+    
+    model_date = get_model_time(selected_coin_for_evaluation, NEURALPROPHET_EVAL_CACHE)
+    neuralprophet_model_updated_time.text(MODEL_UPDATED_TIME.format(model_date), help=TRAINED_MODELS_ARE_CACHED)
 
     with st.spinner(f"{MODEL_NEURALPROPHET.lower()} model is training in progress ..."):
         prediction_data, test_data = neuralprophet_service.train_model(coin_data_df, selected_coin_for_evaluation)
@@ -139,11 +161,16 @@ with tab_neural_prophet:
 
 with tab_lstm:
 
+    lstm_model_updated_time = st.empty()
+
     cached_model_name = get_temp_file_path(selected_coin_for_evaluation, LSTM_EVAL_CACHE)
     if is_file_exits(cached_model_name):
         if st.button(UPDATE_MODEL, key="lstm_cache_clear", help=MODEL_RETRAIN_WILL_TAKE_TIME):
             reload_dataset_and_train_model(selected_coin_for_evaluation, LSTM_EVAL_CACHE)
             st.toast(f"{MODEL_LSTM} model cache clear triggered!")
+    
+    model_date = get_model_time(selected_coin_for_evaluation, LSTM_EVAL_CACHE)
+    lstm_model_updated_time.text(MODEL_UPDATED_TIME.format(model_date), help=TRAINED_MODELS_ARE_CACHED)
 
     with st.spinner(f"{MODEL_LSTM.lower()} model is training in progress ..."):
         prediction_data, test_data = lstm_service.train_model(coin_data_df, selected_coin_for_evaluation)

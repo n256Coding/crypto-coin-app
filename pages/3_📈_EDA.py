@@ -13,7 +13,6 @@ from services.data_grouping_service import perform_clusterization
 st.set_page_config(page_title="EDA", page_icon="📈", layout="wide")
 
 st.markdown("# Explanatory Data Analysis (EDA)")
-st.sidebar.header("EDA")
 st.write(
     """This section performs various explanatory data analysis (EDA) on the dataset."""
 )
