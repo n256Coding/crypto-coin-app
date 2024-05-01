@@ -21,10 +21,8 @@ def load_clustering_dataset() -> pd.DataFrame:
         dataset_df = dataset_df[INTERESTED_DATA_FIELD]
         dataset_df.to_csv(dataset_file_path)
     
-    else:
-        print("Using the cached clustering dataset..")
-        dataset_df = pd.read_csv(dataset_file_path)
-        dataset_df.set_index("Date", inplace=True)
+    dataset_df = pd.read_csv(dataset_file_path)
+    dataset_df.set_index("Date", inplace=True)
 
     return dataset_df
 
