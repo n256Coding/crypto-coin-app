@@ -1,3 +1,4 @@
+import pandas as pd
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
@@ -59,13 +60,17 @@ with row1_col2:
         selected_coin_for_seasonality = st.selectbox('Select the coin which you want to find the seasonal decomposition', SELECTED_COINS)
 
         with st.spinner("Computing in progress ..."):
-            result = seasonal_decompose(coin_data_df[[selected_coin_for_seasonality]], model='additive', period=30)  # Adjust the period according to your dataset's seasonality
+
+            coin_data_df_temp = coin_data_df[[selected_coin_for_seasonality]]
+            coin_data_df_temp.index = pd.to_datetime(coin_data_df_temp.index)
+
+            result = seasonal_decompose(coin_data_df_temp, model='additive')
 
             # Plot the original, trend, seasonal, and residual components using plt.subplots()
             fig, axs = plt.subplots(4, 1, figsize=(12, 8), sharex=True)
 
             # Original time series
-            axs[0].plot(coin_data_df[[selected_coin_for_seasonality]], label='Original')
+            axs[0].plot(coin_data_df_temp, label='Original', )
             axs[0].legend()
 
             # Trend component
