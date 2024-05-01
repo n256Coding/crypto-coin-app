@@ -59,10 +59,13 @@ def update_profit_loss_placeholder(placeholder, model_name: str, *args):
     expected_return, income_loss, indicator = args
 
     with placeholder.container():
-        st.markdown(f'###### {model_name}')
-        st.markdown(f'''Forecasted return: **{expected_return} {BASE_CURRENCY}**  
-                    {indicator}: **:{"red" if indicator == LOSS else "green"}[{income_loss} {BASE_CURRENCY}]**''')
+        # st.markdown(f'###### {model_name}')
+        # st.markdown(f'''Forecasted return: **{expected_return} {BASE_CURRENCY}**  
+        #             {indicator}: **:{"red" if indicator == LOSS else "green"}[{income_loss} {BASE_CURRENCY}]**''')
 
+        st.metric(label=f'# {model_name}', 
+                  value=f'{expected_return} {BASE_CURRENCY}', 
+                  delta=f'{"-" if indicator == LOSS else ""}{income_loss} {BASE_CURRENCY}')
 
 def translate_forecast_period(forecast_period_enum: str):
     if forecast_period_enum == ONE_WEEK:
