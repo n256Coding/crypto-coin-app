@@ -36,7 +36,6 @@ def find_best_params(dataset, selected_coin):
     if is_file_exits(cached_model_name):
         return None, None
 
-    # Fit auto_arima function to AirPassengers dataset
     stepwise_fit = auto_arima(dataset[[selected_coin]], 
                             start_p = 1, 
                             start_q = 1, 
@@ -56,17 +55,17 @@ def find_best_params(dataset, selected_coin):
 
 def train_full_model(dataset: DataFrame, selected_coin: str, forecast_period: str):
 
-    temp_dataset_df = dataset[selected_coin]
-
-    # Split data into train / test sets
-    # train_size = int(0.8 * len(temp_dataset_df))
-    # train = temp_dataset_df.iloc[:train_size]
-    # test = temp_dataset_df.iloc[train_size:]
+    temp_dataset_df = dataset[[selected_coin]]
 
     cached_model_name = get_temp_file_path(selected_coin, ARIMA_CACHE)
     
     if not is_file_exits(cached_model_name):
-        result = pm.auto_arima(temp_dataset_df, error_action='ignore', suppress_warnings=True, D=1, seasonal=True, m=12)
+        result = pm.auto_arima(temp_dataset_df, 
+                               error_action='ignore', 
+                               suppress_warnings=True, 
+                               D=1, 
+                               seasonal=True, 
+                               m=12)
 
         with open(cached_model_name, "wb") as f:
             pickle.dump(result, f)
@@ -82,17 +81,17 @@ def train_full_model(dataset: DataFrame, selected_coin: str, forecast_period: st
     predictions, _ = result.predict(n_periods=period, return_conf_int=True)
 
     forecast_dataframe = pd.DataFrame({
-        "Prediction": predictions
+        "Prediction": predictions.values
     }, index=pd.to_datetime(predictions.index))
     first_row = pd.DataFrame({
-        "Prediction": [temp_dataset_df.values[-1]]
+        "Prediction": [temp_dataset_df.values[-1][0]]
     }, index=pd.to_datetime([temp_dataset_df.index[-1]]))
 
     return pd.concat([first_row, forecast_dataframe])
 
 def train_model(dataset: DataFrame, selected_coin: str):
 
-    temp_dataset_df = dataset[selected_coin]
+    temp_dataset_df = dataset[[selected_coin]]
 
     # Split data into train / test sets
     train_size = int(0.8 * len(temp_dataset_df))
@@ -102,10 +101,12 @@ def train_model(dataset: DataFrame, selected_coin: str):
     cached_model_name = get_temp_file_path(selected_coin, ARIMA_EVAL_CACHE)
     
     if not is_file_exits(cached_model_name):
-        # model = SARIMAX(train, order = model_params[0], seasonal_order = model_params[1], freq='D')
-        # model = ARIMA(order = model_params[0], seasonal_order = model_params[1])
-        result = pm.auto_arima(train, error_action='ignore', suppress_warnings=True, D=2, seasonal=True, m=12)
-        # result = model.fit(train)
+        result = pm.auto_arima(train, 
+                               error_action='ignore', 
+                               suppress_warnings=True, 
+                               D=1, 
+                               seasonal=True, 
+                               m=12)
 
         with open(cached_model_name, "wb") as f:
             pickle.dump(result, f)
@@ -119,15 +120,14 @@ def train_model(dataset: DataFrame, selected_coin: str):
     start = len(train)
     end = len(train) + len(test) - 1
     
-    # predictions = result.predict(start, end, typ = 'levels').rename("Prediction")
-    predictions, conf_int = result.predict(n_periods=len(test), return_conf_int=True)
+    predictions, *conf_int = result.predict(n_periods=len(test), return_conf_int=True)
     test.index = pd.to_datetime(test.index)
 
     forecast_dataframe = pd.DataFrame({
         "Prediction": predictions
     }, index=pd.to_datetime(predictions.index))
     test_dataframe = pd.DataFrame({
-        "Actual": test,
+        "Actual": test.values.reshape(-1),
     }, index=test.index)
 
     return forecast_dataframe, test_dataframe
