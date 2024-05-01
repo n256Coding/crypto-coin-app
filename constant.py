@@ -11,7 +11,7 @@ MODEL_TRAINING_IN_PROGRESS = 'Model is training in progress. This will take few 
 TRAINED_MODELS_ARE_CACHED = f'Once trained, models are cached to improve the performance. Click on "{UPDATE_MODEL}" button to retrain the model with latest data. This will take few minutes.'
 
 # Model Names
-MODEL_ARIMA = 'ARIMA'
+MODEL_ARIMA = 'SARIMA'
 MODEL_PROPHET = 'Prophet'
 MODEL_NEURALPROPHET = 'Neural Prophet'
 MODEL_LSTM = 'LSTM'
