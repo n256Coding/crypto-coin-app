@@ -43,7 +43,7 @@ with col2:
 
 with st.container(border=True):
     # Trade Signal Panel
-    st.subheader(f'Trade Signal _:gray[- {selected_coin_for_forecast} in {forecast_period}]_', divider='rainbow')
+    st.subheader(f'Trade Signal _:gray[- {get_currency_name(selected_coin_for_forecast)} in {forecast_period}]_', divider='rainbow')
     col_trade_signal_1, col_trade_signal_2, col_trade_signal_3, col_trade_signal_4, col_trade_signal_5 = st.columns(5)
     with col_trade_signal_1:
         txt_arima_trade_signal = st.empty()
@@ -240,19 +240,19 @@ if most_voted_trade_signal == SAME:
     txt_avg_trade_signal.empty()
     txt_avg_trade_signal_indicator.empty()
 else:
-    txt_avg_trade_signal.markdown(f"Based on most votes, it is recommended to **{most_voted_trade_signal}** your {selected_coin_for_forecast} based on future {forecast_period.lower()} forecast.")
+    txt_avg_trade_signal.markdown(f"Based on most votes, it is recommended to **{most_voted_trade_signal}** your {get_currency_name(selected_coin_for_forecast)} based on future {forecast_period.lower()} forecast.")
     txt_avg_trade_signal_indicator.markdown(f"# **:red[{most_voted_trade_signal}]**")
 
 
 full_coin_data_correlation = get_main_dataset().corr()
 correlated_coins_df = full_coin_data_correlation[selected_coin_for_forecast].sort_values(ascending=False)
-positive_correlated_coins = correlated_coins_df.iloc[1:MAX_SUGGESTED_COINS].index.to_list()
+positive_correlated_coins = correlated_coins_df.iloc[1:MAX_SUGGESTED_COINS+1].index.to_list()
 least_correlated_coins = correlated_coins_df.iloc[-MAX_SUGGESTED_COINS:].index.to_list()
 
 with txt_positive_correlated_coins.container():
     st.markdown(f"Based on our analysis, we can recommend you to **{most_voted_trade_signal}** following coins as well")
-    st.markdown(f"##### {', '.join(positive_correlated_coins)}")
+    st.markdown(f"##### {', '.join([get_currency_name(cryptocurrency) for cryptocurrency in positive_correlated_coins])}")
 
 with txt_least_correlated_coins.container():
     st.markdown('Based on our analysis, these coins are least correlated coins')
-    st.markdown(f"##### {', '.join(least_correlated_coins)}")
+    st.markdown(f"##### {', '.join([get_currency_name(cryptocurrency) for cryptocurrency in least_correlated_coins])}")
