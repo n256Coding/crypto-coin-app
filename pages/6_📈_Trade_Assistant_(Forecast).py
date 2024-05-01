@@ -95,7 +95,7 @@ with st.container(border=True):
         amount_to_invest = st.number_input(f'Enter desired invesment in {BASE_CURRENCY}', min_value=1)
 
     st.write(f'''If you invest {amount_to_invest} {BASE_CURRENCY} today on 
-             {get_currency_name(selected_coin_for_forecast)}, at the end of {forecast_period.lower()},''')
+             {get_currency_name(selected_coin_for_forecast)}, at the end of {forecast_period.lower()}, your return would be: ''')
     col_invest_calc_1, col_invest_calc_2, col_invest_calc_3, col_invest_calc_4, col_invest_calc_5 = st.columns(5)
     with col_invest_calc_1:
         txt_arima_invest_calc = st.empty()

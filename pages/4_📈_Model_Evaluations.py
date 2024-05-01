@@ -21,6 +21,7 @@ st.write(
 
 selected_coin_for_evaluation = st.selectbox('Select the coin which you want to evaluate on', SELECTED_COINS, key="eval_coin_select")
 
+st.subheader('Overall Results', divider='rainbow')
 plt_overall_prediction = st.empty()
 plt_overall_prediction.markdown("**:blue[Overall evaluation is preparing in progress :hourglass_flowing_sand: ...]**")
 overall_prediction_df = pd.DataFrame()
@@ -194,8 +195,7 @@ with plt_overall_prediction.container():
     col_overall_pred_left, col_overall_pred_right = st.columns([0.3, 0.7])
 
     with col_overall_pred_left:
-        st.markdown("# ")
-        st.subheader('Overall Results', divider='rainbow')
+        st.markdown('##### Evaluation metrics')
         overall_evaluation_df = pd.DataFrame(EVALUATIONS, index=["RMSE", "MSE", "MAE"])
         st.table(overall_evaluation_df.T)
     
