@@ -25,13 +25,5 @@ st.page_link('pages/4_📈_Model_Evaluations.py', label='Model Evaluations', ico
 st.page_link('pages/5_📈_Moving_Average.py', label='Data Moving Average', icon='📈')
 st.page_link('pages/6_📈_Trade_Assistant_(Forecast).py', label='Trade Assistant (Forecast)', icon='📈')
 
-st.markdown('# ')
-st.markdown('# ')
-
-with st.container(border=True):
-    st.markdown('_:gray[Senarath Pathiranalage Nishan Sajeewee Wickramasinghe]_')
-    st.markdown('_:gray[(Q102091977)]_')
-    st.markdown('_:gray[Applied AI in Business]_')
-    st.markdown('_:gray[AE2]_')
 
 
