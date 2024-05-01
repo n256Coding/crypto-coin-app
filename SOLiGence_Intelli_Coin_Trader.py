@@ -1,43 +1,37 @@
 import streamlit as st
 
 
-st.set_page_config(page_title="Intelli Coin Trader", page_icon="📊")
+st.set_page_config(page_title="Intelli Coin Trader", page_icon="📊",)
 
-def intro():
-    import streamlit as st
 
-    st.write("# Welcome to Streamlit! 👋")
-    st.sidebar.success("Select a demo above.")
+st.write("# SOLiGence Intelli Coin Trader")
+st.sidebar.success("Select any option from above")
 
-    st.markdown(
-        """
-        Streamlit is an open-source app framework built specifically for
-        Machine Learning and Data Science projects.
-
-        **👈 Select a demo from the dropdown on the left** to see some examples
-        of what Streamlit can do!
-
-        ### Want to learn more?
-
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
-
-        ### See more complex demos
-
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
+st.markdown(
     """
-    )
+    This application is an innovative tool designed for investors. 
+    It uses five distinct forecasting models to predict the potential profit or loss from an investment over a given period. 
+    By providing these insights, the application empowers users to make informed investment decisions based on the projected returns. 
+    It's not just about tracking investments, but about optimizing them for the future. 
 
-page_names_to_funcs = {
-    "—": intro,
-    # "Mapping Demo": mapping_demo
-}
+    ### To begin, click on any option below
+"""
+)
 
-# demo_name = st.sidebar.selectbox("Choose a demo", page_names_to_funcs.keys())
-# demo_name = st.sidebar()
-# page_names_to_funcs[demo_name]()
+st.page_link('pages/1_📊_Data_Grouping.py', label='Data Grouping', icon='📊')
+st.page_link('pages/2_📈_Correlated_Currencies.py', label='Correlated Currencies', icon='📈')
+st.page_link('pages/3_📈_EDA.py', label='Explanatory Data Analysis', icon='📈')
+st.page_link('pages/4_📈_Model_Evaluations.py', label='Model Evaluations', icon='📈')
+st.page_link('pages/5_📈_Moving_Average.py', label='Data Moving Average', icon='📈')
+st.page_link('pages/6_📈_Trade_Assistant_(Forecast).py', label='Trade Assistant (Forecast)', icon='📈')
+
+st.markdown('# ')
+st.markdown('# ')
+
+with st.container(border=True):
+    st.markdown('_:gray[Senarath Pathiranalage Nishan Sajeewee Wickramasinghe]_')
+    st.markdown('_:gray[(Q102091977)]_')
+    st.markdown('_:gray[Applied AI in Business]_')
+    st.markdown('_:gray[AE2]_')
+
 
