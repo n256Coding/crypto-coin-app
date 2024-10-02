@@ -16,10 +16,3 @@ Move to the project home directory and run following command to start the applic
 ```bash
 streamlit run SOLiGence_Intelli_Coin_Trader.py
 ```
-<hr>
-This is the AE2 project of Applied AI in Business.
-
-> Senarath Pathiranalage Nishan Sajeewee Wickramasinghe<br>
-> (Q102091977)<br>
-> Applied AI in Business<br>
-> AE2
