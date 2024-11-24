@@ -7,3 +7,6 @@ prophet
 keras
 tensorflow
 rss-parser
+matplotlib
+scikit-learn
+neuralprophet
