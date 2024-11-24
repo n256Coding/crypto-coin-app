@@ -16,3 +16,22 @@ Move to the project home directory and run following command to start the applic
 ```bash
 streamlit run SOLiGence_Intelli_Coin_Trader.py
 ```
+
+## Application Screenshots
+
+### Trade Assistant View
+Assists the trader take decisions with the help of machine learning model.
+
+![Trade Assistant UI](docs/Trade%20Assistant%20UI.png)
+
+
+### Explanatory Data Analysis View
+Performs various explanatory data analysis (EDA) on the dataset.
+
+![Explanatory Data Analysis](docs/EDA.png)
+
+
+### Moving Average View
+Shows the moving average.
+
+![Moving Average](docs/Moving%20Average.png)
